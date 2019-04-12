@@ -5,9 +5,8 @@
 // MIT Licensed
 
 // Module dependencies.
-var debug = require('debug')('connect:dispatcher');
 var EventEmitter = require('events').EventEmitter;
-var finalhandler = require('finalhandler');
+var finalhandler = require('./finalhandler');
 var http = require('http');
 var merge = require('utils-merge');
 var parseUrl = require('parseurl');
@@ -63,7 +62,6 @@ proto.use = function use(route, fn) {
   }
 
   // add the middleware
-  debug('use %s %s', path || '/', handle.name || 'anonymous');
   this.stack.push({ route: path, handle: handle });
 
   return this;
@@ -151,8 +149,6 @@ function call(handle, route, err, req, res, next) {
   var arity = handle.length;
   var error = err;
   var hasError = Boolean(err);
-
-  debug('%s %s : %s', handle.name || '<anonymous>', route, req.originalUrl);
 
   try {
     if (hasError && arity === 4) {
