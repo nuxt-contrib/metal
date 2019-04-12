@@ -8,7 +8,7 @@
 var EventEmitter = require('events').EventEmitter;
 var finalhandler = require('./finalhandler');
 var http = require('http');
-var merge = require('utils-merge');
+var merge = require('./merge');
 var parseUrl = require('parseurl');
 
 // Module exports
