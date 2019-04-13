@@ -47,13 +47,13 @@ proto.use = function use(route, fn) {
     var server = handle;
     server.route = path;
     handle = function (req, res, next) {
-      server.handle(req, res, next);
-    };
+      server.handle(req, res, next)
+    }
   }
 
   // wrap vanilla http.Servers
   if (handle instanceof http.Server) {
-    handle = handle.listeners('request')[0];
+    handle = handle.listeners('request')[0]
   }
 
   // strip trailing slash
