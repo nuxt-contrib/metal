@@ -1,27 +1,29 @@
-/*!
- * ee-first
- * Copyright(c) 2014 Jonathan Ong
- * MIT Licensed
- */
+// ee-first
+// Copyright(c) 2014 Jonathan Ong
+// MIT Licensed
 
 'use strict'
 
-/**
- * Module exports.
- * @public
- */
+// Create the event listener.
+function listener (event, done) {
+  return function onevent (arg1) {
+    var args = new Array(arguments.length)
+    var ee = this
+    var err = event === 'error'
+      ? arg1
+      : null
 
-module.exports = first
+    // copy args to prevent arguments escaping scope
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
 
-/**
- * Get the first event in a set of event emitters and event pairs.
- *
- * @param {array} stuff
- * @param {function} done
- * @public
- */
+    done(err, ee, event, args)
+  }
+}
 
-function first (stuff, done) {
+// Get the first event in a set of event emitters and event pairs.
+module.exports = function first (stuff, done) {
   if (!Array.isArray(stuff)) {
     throw new TypeError('arg must be an array of [ee, events...] arrays')
   }
@@ -72,26 +74,4 @@ function first (stuff, done) {
   thunk.cancel = cleanup
 
   return thunk
-}
-
-/**
- * Create the event listener.
- * @private
- */
-
-function listener (event, done) {
-  return function onevent (arg1) {
-    var args = new Array(arguments.length)
-    var ee = this
-    var err = event === 'error'
-      ? arg1
-      : null
-
-    // copy args to prevent arguments escaping scope
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i]
-    }
-
-    done(err, ee, event, args)
-  }
 }

@@ -1,61 +1,30 @@
-/*!
- * on-finished
- * Copyright(c) 2013 Jonathan Ong
- * Copyright(c) 2014 Douglas Christopher Wilson
- * MIT Licensed
- */
+// Package: https://github.com/jshttp/on-finished
+// Authors: Jonathan Ong, Douglas Christopher Wilson
 
 'use strict'
 
-/**
- * Module exports.
- * @public
- */
+const first = require('./ee-first')
 
 module.exports = onFinished
 module.exports.isFinished = isFinished
 
-/**
- * Module dependencies.
- * @private
- */
-
-var first = require('./ee-first')
-
-/**
- * Variables.
- * @private
- */
-
-/* istanbul ignore next */
-var defer = typeof setImmediate === 'function'
+const defer = typeof setImmediate === 'function'
   ? setImmediate
   : function (fn) { process.nextTick(fn.bind.apply(fn, arguments)) }
 
-/**
- * Invoke callback when the response has finished, useful for
- * cleaning up resources afterwards.
- *
- * @param {object} msg
- * @param {function} listener
- * @return {object}
- * @public
- */
-
+// Invoke callback when the response has finished, useful for
+// cleaning up resources afterwards.
 function onFinished (msg, listener) {
   if (isFinished(msg) !== false) {
     defer(listener, null, msg)
     return msg
   }
-
   // attach the listener to the message
   attachListener(msg, listener)
-
   return msg
 }
 
 // Determine if message is already finished.
-
 function isFinished (msg) {
   var socket = msg.socket
 
@@ -117,14 +86,7 @@ function attachFinishedListener (msg, callback) {
   }
 }
 
-/**
- * Attach the listener to the message.
- *
- * @param {object} msg
- * @return {function}
- * @private
- */
-
+// Attach the listener to the message.
 function attachListener (msg, listener) {
   var attached = msg.__onFinished
 
