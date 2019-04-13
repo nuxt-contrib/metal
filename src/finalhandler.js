@@ -2,31 +2,19 @@
 
 'use strict'
 
-var debug = require('debug')('finalhandler')
 var encodeUrl = require('./encodeurl')
 var escapeHtml = require('./escape-html')
 var onFinished = require('./on-finished')
 var parseUrl = require('./parseurl')
-var statuses = require('statuses')
-var unpipe = require('unpipe')
-
-/**
- * Module variables.
- * @private
- */
+var statuses = require('./statuses')
+var unpipe = require('./unpipe')
 
 var DOUBLE_SPACE_REGEXP = /\x20{2}/g
 var NEWLINE_REGEXP = /\n/g
 
 var isFinished = onFinished.isFinished
 
-/**
- * Create a minimal HTML document.
- *
- * @param {string} message
- * @private
- */
-
+// Create a minimal HTML document.
 function createHtmlDocument (message) {
   var body = escapeHtml(message)
     .replace(NEWLINE_REGEXP, '<br>')
