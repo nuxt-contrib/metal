@@ -20,7 +20,7 @@ module.exports.isFinished = isFinished
  * @private
  */
 
-var first = require('ee-first')
+var first = require('./ee-first')
 
 /**
  * Variables.
@@ -54,13 +54,7 @@ function onFinished (msg, listener) {
   return msg
 }
 
-/**
- * Determine if message is already finished.
- *
- * @param {object} msg
- * @return {boolean}
- * @public
- */
+// Determine if message is already finished.
 
 function isFinished (msg) {
   var socket = msg.socket
@@ -79,13 +73,7 @@ function isFinished (msg) {
   return undefined
 }
 
-/**
- * Attach a finished listener to the message.
- *
- * @param {object} msg
- * @param {function} callback
- * @private
- */
+// Attach a finished listener to the message.
 
 function attachFinishedListener (msg, callback) {
   var eeMsg
@@ -149,46 +137,31 @@ function attachListener (msg, listener) {
   attached.queue.push(listener)
 }
 
-/**
- * Create listener on message.
- *
- * @param {object} msg
- * @return {function}
- * @private
- */
-
+// Create listener on message.
 function createListener (msg) {
   function listener (err) {
-    if (msg.__onFinished === listener) msg.__onFinished = null
-    if (!listener.queue) return
-
+    if (msg.__onFinished === listener) {
+      msg.__onFinished = null
+    }
+    if (!listener.queue) {
+      return
+    }
     var queue = listener.queue
     listener.queue = null
-
     for (var i = 0; i < queue.length; i++) {
       queue[i](err, msg)
     }
   }
-
   listener.queue = []
-
   return listener
 }
 
-/**
- * Patch ServerResponse.prototype.assignSocket for node.js 0.8.
- *
- * @param {ServerResponse} res
- * @param {function} callback
- * @private
- */
-
-// istanbul ignore next: node.js 0.8 patch
+// Patch ServerResponse.prototype.assignSocket for node.js 0.8.
 function patchAssignSocket (res, callback) {
   var assignSocket = res.assignSocket
-
-  if (typeof assignSocket !== 'function') return
-
+  if (typeof assignSocket !== 'function') {
+    return
+  }
   // res.on('socket', callback) is broken in 0.8
   res.assignSocket = function _assignSocket (socket) {
     assignSocket.call(this, socket)
