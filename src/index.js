@@ -8,9 +8,7 @@
 var EventEmitter = require('events').EventEmitter;
 var finalhandler = require('./finalhandler');
 var http = require('http');
-var merge = require('./merge');
 var parseUrl = require('./parseurl');
-const { merge } = require('./utils')
 
 // Module exports
 
@@ -21,12 +19,13 @@ var env = process.env.NODE_ENV || 'development';
 var proto = {};
 
 function createServer() {
-  function app(req, res, next){ app.handle(req, res, next); }
-  merge(app, proto);
-  merge(app, EventEmitter.prototype);
-  app.route = '/';
-  app.stack = [];
-  return app;
+  function app(req, res, next) {
+    app.handle(req, res, next)
+  }
+  Object.assign(app, proto, EventEmitter.prototype)
+  app.route = '/'
+  app.stack = []
+  return app
 }
 
 proto.use = function use(route, fn) {
