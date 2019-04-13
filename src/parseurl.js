@@ -1,37 +1,16 @@
-/*!
- * parseurl
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2014-2017 Douglas Christopher Wilson
- * MIT Licensed
- */
+// Package: parseurl
+// Authors: Jonathan Ong, Douglas Christopher Wilson
 
 'use strict'
-
-/**
- * Module dependencies.
- * @private
- */
 
 var url = require('url')
 var parse = url.parse
 var Url = url.Url
 
-/**
- * Module exports.
- * @public
- */
-
 module.exports = parseurl
 module.exports.original = originalurl
 
-/**
- * Parse the `req` url with memoization.
- *
- * @param {ServerRequest} req
- * @return {Object}
- * @public
- */
-
+// Parse the `req` url with memoization.
 function parseurl (req) {
   var url = req.url
 
@@ -84,14 +63,7 @@ function originalurl (req) {
   return (req._parsedOriginalUrl = parsed)
 };
 
-/**
- * Parse the `str` url with fast-path short-cut.
- *
- * @param {string} str
- * @return {Object}
- * @private
- */
-
+// Parse the `str` url with fast-path short-cut.
 function fastparse (str) {
   if (typeof str !== 'string' || str.charCodeAt(0) !== 0x2f /* / */) {
     return parse(str)
@@ -137,15 +109,7 @@ function fastparse (str) {
   return url
 }
 
-/**
- * Determine if parsed is still fresh for url.
- *
- * @param {string} url
- * @param {object} parsedUrl
- * @return {boolean}
- * @private
- */
-
+// Determine if parsed is still fresh for url.
 function fresh (url, parsedUrl) {
   return typeof parsedUrl === 'object' &&
     parsedUrl !== null &&
