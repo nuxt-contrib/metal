@@ -1,18 +1,9 @@
-/*!
- * statuses
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2016 Douglas Christopher Wilson
- * MIT Licensed
- */
+// Package: statuses
+// Authors: Jonathan Ong, Douglas Christopher Wilson
 
 'use strict'
 
-/**
- * Module dependencies.
- * @private
- */
-
-var codes = {
+const codes = {
   "100": "Continue",
   "101": "Switching Protocols",
   "102": "Processing",
@@ -78,11 +69,6 @@ var codes = {
   "510": "Not Extended",
   "511": "Network Authentication Required"
 }
-
-/**
- * Module exports.
- * @public
- */
 
 module.exports = status
 

@@ -10,6 +10,7 @@ var finalhandler = require('./finalhandler');
 var http = require('http');
 var merge = require('./merge');
 var parseUrl = require('./parseurl');
+const { merge } = require('./utils')
 
 // Module exports
 
@@ -18,10 +19,6 @@ module.exports = createServer;
 // Module variables.
 var env = process.env.NODE_ENV || 'development';
 var proto = {};
-
-var defer = typeof setImmediate === 'function'
-  ? setImmediate
-  : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)) }
 
 function createServer() {
   function app(req, res, next){ app.handle(req, res, next); }
@@ -100,7 +97,7 @@ proto.handle = function handle(req, res, out) {
 
     // all done
     if (!layer) {
-      defer(done, err);
+      setImmediate(done, err);
       return;
     }
 
