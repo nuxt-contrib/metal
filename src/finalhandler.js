@@ -1,15 +1,6 @@
-/*!
- * finalhandler
- * Copyright(c) 2014-2017 Douglas Christopher Wilson
- * MIT Licensed
- */
+// Copyright(c) 2014-2017 Douglas Christopher Wilson
 
 'use strict'
-
-/**
- * Module dependencies.
- * @private
- */
 
 var debug = require('debug')('finalhandler')
 var encodeUrl = require('./encodeurl')
