@@ -57,23 +57,9 @@ function createHtmlDocument (message) {
     '</html>\n'
 }
 
-/**
- * Module exports.
- * @public
- */
-
 module.exports = finalhandler
 
-/**
- * Create a function to handle the final response.
- *
- * @param {Request} req
- * @param {Response} res
- * @param {Object} [options]
- * @return {Function}
- * @public
- */
-
+// Create a function to handle the final response.
 function finalhandler (req, res, options) {
   var opts = options || {}
 
@@ -94,9 +80,7 @@ function finalhandler (req, res, options) {
       return
     }
 
-    // unhandled error
     if (err) {
-      // respect status code from error
       status = getErrorStatusCode(err)
 
       if (status === undefined) {
@@ -106,11 +90,8 @@ function finalhandler (req, res, options) {
         // respect headers from error
         headers = getErrorHeaders(err)
       }
-
-      // get error message
       msg = getErrorMessage(err, status, env)
     } else {
-      // not found
       status = 404
       msg = 'Cannot ' + req.method + ' ' + encodeUrl(getResourceName(req))
     }
@@ -134,13 +115,7 @@ function finalhandler (req, res, options) {
   }
 }
 
-/**
- * Get headers from Error object.
- *
- * @param {Error} err
- * @return {object}
- * @private
- */
+// Get headers from Error object.
 
 function getErrorHeaders (err) {
   if (!err.headers || typeof err.headers !== 'object') {
