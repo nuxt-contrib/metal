@@ -1,16 +1,13 @@
 // Package: https://github.com/jshttp/on-finished
 // Authors: Jonathan Ong, Douglas Christopher Wilson
 
-'use strict'
-
 const first = require('./ee-first')
 
-module.exports = onFinished
-module.exports.isFinished = isFinished
+onFinished.isFinished = isFinished
 
 // Invoke callback when the response has finished, useful for
 // cleaning up resources afterwards.
-function onFinished (msg, listener) {
+module.exports = function onFinished (msg, listener) {
   if (isFinished(msg) !== false) {
     setImmediate(listener, null, msg)
     return msg
@@ -22,24 +19,17 @@ function onFinished (msg, listener) {
 
 // Determine if message is already finished.
 function isFinished (msg) {
-  var socket = msg.socket
-
-  if (typeof msg.finished === 'boolean') {
-    // OutgoingMessage
+  const socket = msg.socket
+  if (typeof msg.finished === 'boolean') { // OutgoingMessage
     return Boolean(msg.finished || (socket && !socket.writable))
   }
-
-  if (typeof msg.complete === 'boolean') {
-    // IncomingMessage
+  if (typeof msg.complete === 'boolean') { // IncomingMessage
     return Boolean(msg.upgrade || !socket || !socket.readable || (msg.complete && !msg.readable))
   }
-
-  // don't know
   return undefined
 }
 
 // Attach a finished listener to the message.
-
 function attachFinishedListener (msg, callback) {
   var eeMsg
   var eeSocket
@@ -59,27 +49,20 @@ function attachFinishedListener (msg, callback) {
   function onSocket (socket) {
     // remove listener
     msg.removeListener('socket', onSocket)
-
-    if (finished) return
-    if (eeMsg !== eeSocket) return
-
+    if (finished || eeMsg !== eeSocket) {
+      return
+    }
     // finished on first socket event
     eeSocket = first([[socket, 'error', 'close']], onFinish)
   }
 
-  if (msg.socket) {
-    // socket already assigned
+  if (msg.socket) { // socket already assigned
     onSocket(msg.socket)
     return
   }
 
   // wait for socket to be assigned
   msg.on('socket', onSocket)
-
-  if (msg.socket === undefined) {
-    // istanbul ignore next: node.js 0.8 patch
-    patchAssignSocket(msg, onSocket)
-  }
 }
 
 // Attach the listener to the message.
@@ -112,17 +95,4 @@ function createListener (msg) {
   }
   listener.queue = []
   return listener
-}
-
-// Patch ServerResponse.prototype.assignSocket for node.js 0.8.
-function patchAssignSocket (res, callback) {
-  var assignSocket = res.assignSocket
-  if (typeof assignSocket !== 'function') {
-    return
-  }
-  // res.on('socket', callback) is broken in 0.8
-  res.assignSocket = function _assignSocket (socket) {
-    assignSocket.call(this, socket)
-    callback(socket)
-  }
 }
