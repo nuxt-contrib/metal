@@ -13,8 +13,8 @@
 
 var debug = require('debug')('finalhandler')
 var encodeUrl = require('./encodeurl')
-var escapeHtml = require('escape-html')
-var onFinished = require('on-finished')
+var escapeHtml = require('./escape-html')
+var onFinished = require('./on-finished')
 var parseUrl = require('./parseurl')
 var statuses = require('statuses')
 var unpipe = require('unpipe')
