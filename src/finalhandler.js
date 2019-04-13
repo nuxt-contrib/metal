@@ -158,16 +158,7 @@ function getErrorHeaders (err) {
   return headers
 }
 
-/**
- * Get message from Error object, fallback to status message.
- *
- * @param {Error} err
- * @param {number} status
- * @param {string} env
- * @return {string}
- * @private
- */
-
+// Get message from Error object, fallback to status message.
 function getErrorMessage (err, status, env) {
   var msg
 
@@ -184,14 +175,7 @@ function getErrorMessage (err, status, env) {
   return msg || statuses[status]
 }
 
-/**
- * Get status code from Error object.
- *
- * @param {Error} err
- * @return {number}
- * @private
- */
-
+// Get status code from Error object.
 function getErrorStatusCode (err) {
   // check err.status
   if (typeof err.status === 'number' && err.status >= 400 && err.status < 600) {
@@ -206,16 +190,10 @@ function getErrorStatusCode (err) {
   return undefined
 }
 
-/**
- * Get resource name for the request.
- *
- * This is typically just the original pathname of the request
- * but will fallback to "resource" is that cannot be determined.
- *
- * @param {IncomingMessage} req
- * @return {string}
- * @private
- */
+// Get resource name for the request.
+//
+// This is typically just the original pathname of the request
+// but will fallback to "resource" is that cannot be determined.
 
 function getResourceName (req) {
   try {
@@ -225,14 +203,7 @@ function getResourceName (req) {
   }
 }
 
-/**
- * Get status code from response.
- *
- * @param {OutgoingMessage} res
- * @return {number}
- * @private
- */
-
+// Get status code from response.
 function getResponseStatusCode (res) {
   var status = res.statusCode
 
@@ -244,31 +215,14 @@ function getResponseStatusCode (res) {
   return status
 }
 
-/**
- * Determine if the response headers have been sent.
- *
- * @param {object} res
- * @returns {boolean}
- * @private
- */
-
+// Determine if the response headers have been sent.
 function headersSent (res) {
   return typeof res.headersSent !== 'boolean'
     ? Boolean(res._header)
     : res.headersSent
 }
 
-/**
- * Send response.
- *
- * @param {IncomingMessage} req
- * @param {OutgoingMessage} res
- * @param {number} status
- * @param {object} headers
- * @param {string} message
- * @private
- */
-
+// Send response.
 function send (req, res, status, headers, message) {
   function write () {
     // response body
@@ -310,13 +264,7 @@ function send (req, res, status, headers, message) {
   req.resume()
 }
 
-/**
- * Set response headers from an object.
- *
- * @param {OutgoingMessage} res
- * @param {object} headers
- * @private
- */
+// Set response headers from an object.
 
 function setHeaders (res, headers) {
   if (!headers) {
