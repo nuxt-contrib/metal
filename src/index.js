@@ -7,7 +7,7 @@
 import http from 'http'
 import { EventEmitter } from 'events'
 import { getURLPathname, trimURLPath } from './utils'
-import finalHandler from './finalhandler'
+import finalHandler from './final'
 
 const env = process.env.NODE_ENV || 'development'
 const proto = {}
@@ -20,7 +20,7 @@ class Metal extends EventEmitter {
     const handler = function() {
       app.handle(arguments)
     }
-    handler.__proto__ = this.__proto__
+    handler.__proto__ = app.__proto__
     return handler
   }
   listen() {
@@ -121,8 +121,6 @@ function call(handle, route, err, req, res, next) {
     // replace the error
     error = e
   }
-
-  // continue
   next(error)
 }
 

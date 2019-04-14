@@ -2,7 +2,7 @@
 import {
   onFinished,
   isFinished
-} from './on-finished'
+} from './finished'
 
 import { 
   encodeURL, 
