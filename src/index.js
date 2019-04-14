@@ -5,20 +5,14 @@
 // MIT Licensed
 
 // Module dependencies.
-var EventEmitter = require('events').EventEmitter;
-var finalhandler = require('./finalhandler');
-var http = require('http');
-var parseUrl = require('./parseurl');
+var EventEmitter = require('events').EventEmitter
+const finalhandler = require('./finalhandler')
+const http = require('http')
+const parseUrl = require('./parseurl')
+const env = process.env.NODE_ENV || 'development'
+const proto = {}
 
-// Module exports
-
-module.exports = createServer;
-
-// Module variables.
-var env = process.env.NODE_ENV || 'development';
-var proto = {};
-
-function createServer() {
+module.exports = function createServer() {
   function app(req, res, next) {
     app.handle(req, res, next)
   }
@@ -28,40 +22,31 @@ function createServer() {
   return app
 }
 
-proto.use = function use(route, fn) {
-  var handle = fn;
-  var path = route;
-
+proto.use = function use(route, handle) {
   // default route to '/'
   if (typeof route !== 'string') {
-    handle = route;
-    path = '/';
+    handle = route
+    route = '/'
   }
-
   // wrap sub-apps
-  if (typeof handle.handle === 'function') {
-    var server = handle;
-    server.route = path;
+  if (typeof handle.handle === 'function') { 
+    const server = handle
+    server.route = route
     handle = function (req, res, next) {
       server.handle(req, res, next)
     }
   }
-
   // wrap vanilla http.Servers
   if (handle instanceof http.Server) {
     handle = handle.listeners('request')[0]
   }
-
   // strip trailing slash
-  if (path[path.length - 1] === '/') {
-    path = path.slice(0, -1);
+  if (route[route.length - 1] === '/') {
+    route = route.slice(0, -1);
   }
-
-  // add the middleware
-  this.stack.push({ route: path, handle: handle });
-
-  return this;
-};
+  this.stack.push({ route, handle })
+  return this
+}
 
 // Handle server requests, punting them down the middleware stack.
 proto.handle = function handle(req, res, out) {
