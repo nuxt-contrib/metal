@@ -4,125 +4,120 @@
 // Copyright(c) 2015 Douglas Christopher Wilson
 // MIT Licensed
 
+import http from 'http'
 import { EventEmitter } from 'events'
 import { getURLPathname } from './utils'
-const finalhandler = require('./finalhandler')
-const http = require('http')
-const parseUrl = require('./parseurl')
+import finalhandler from './finalhandler'
+
 const env = process.env.NODE_ENV || 'development'
 const proto = {}
 
-module.exports = function createServer() {
-  function app(req, res, next) {
-    app.handle(req, res, next)
-  }
-  Object.assign(app, proto, EventEmitter.prototype)
-  app.route = '/'
-  app.stack = []
-  return app
-}
-
-proto.use = function use(route, handle) {
-  // default route to '/'
-  if (typeof route !== 'string') {
-    handle = route
-    route = '/'
-  }
-  // wrap sub-apps
-  if (typeof handle.handle === 'function') { 
-    const server = handle
-    server.route = route
-    handle = function (req, res, next) {
-      server.handle(req, res, next)
+class Metal extends EventEmitter {
+  static createServer() {
+    const app = new Metal()
+    app.route = '/'
+    app.stack = []
+    return function() {
+      app.handle(arguments)
     }
   }
-  // wrap vanilla http.Servers
-  if (handle instanceof http.Server) {
-    handle = handle.listeners('request')[0]
+  listen() {
+    const server = http.createServer(this)
+    return server.listen.apply(server, arguments)
   }
-  // strip trailing slash
-  if (route[route.length - 1] === '/') {
-    route = route.slice(0, -1)
-  }
-  this.stack.push({ route, handle })
-  return this
-}
-
-// Handle server requests, punting them down the middleware stack.
-proto.handle = function handle(req, res, out) {
-  var index = 0
-  var protohost = getProtohost(req.url) || ''
-  var removed = ''
-  var slashAdded = false
-  var stack = this.stack
-
-  // final function handler
-  var done = out || finalhandler(req, res, {
-    env: env,
-    onerror: logerror
-  })
-
-  // store the original URL
-  req.originalUrl = req.originalUrl || req.url
-
-  function next(err) {
-    if (slashAdded) {
-      req.url = req.url.substr(1)
-      slashAdded = false
+  use(route, handle) {
+    // default route to '/'
+    if (typeof route !== 'string') {
+      handle = route
+      route = '/'
     }
-
-    if (removed.length !== 0) {
-      req.url = protohost + removed + req.url.substr(protohost.length)
-      removed = ''
-    }
-
-    // next callback
-    var layer = stack[index++]
-
-    // all done
-    if (!layer) {
-      setImmediate(done, err)
-      return
-    }
-
-    // route data
-    var path = getURLPathname(req.url) || '/'
-    var route = layer.route
-
-    // skip this layer if the route doesn't match
-    if (path.toLowerCase().substr(0, route.length) !== route.toLowerCase()) {
-      return next(err)
-    }
-
-    // skip if route match does not border "/", ".", or end
-    var c = path.length > route.length && path[route.length]
-    if (c && c !== '/' && c !== '.') {
-      return next(err)
-    }
-
-    // trim off the part of the url that matches the route
-    if (route.length !== 0 && route !== '/') {
-      removed = route
-      req.url = protohost + req.url.substr(protohost.length + removed.length)
-
-      // ensure leading slash
-      if (!protohost && req.url[0] !== '/') {
-        req.url = '/' + req.url
-        slashAdded = true
+    // wrap sub-apps
+    if (typeof handle.handle === 'function') { 
+      const server = handle
+      server.route = route
+      handle = function (req, res, next) {
+        server.handle(req, res, next)
       }
     }
-
-    // call the layer handle
-    call(layer.handle, route, err, req, res, next)
+    // wrap vanilla http.Servers
+    if (handle instanceof http.Server) {
+      handle = handle.listeners('request')[0]
+    }
+    // strip trailing slash
+    if (route[route.length - 1] === '/') {
+      route = route.slice(0, -1)
+    }
+    this.stack.push({ route, handle })
+    return this
   }
+  handle(req, res, out) {
+    var index = 0
+    var protohost = getProtohost(req.url) || ''
+    var removed = ''
+    var slashAdded = false
+    var stack = this.stack
 
-  next()
-}
+    // final function handler
+    var done = out || finalhandler(req, res, {
+      env: env,
+      onerror: logerror
+    })
 
-// Listen for connections.
-proto.listen = function listen() {
-  var server = http.createServer(this)
-  return server.listen.apply(server, arguments)
+    // store the original URL
+    req.originalUrl = req.originalUrl || req.url
+
+    function next(err) {
+      if (slashAdded) {
+        req.url = req.url.substr(1)
+        slashAdded = false
+      }
+
+      if (removed.length !== 0) {
+        req.url = protohost + removed + req.url.substr(protohost.length)
+        removed = ''
+      }
+
+      // next callback
+      var layer = stack[index++]
+
+      // all done
+      if (!layer) {
+        setImmediate(done, err)
+        return
+      }
+
+      // route data
+      var path = getURLPathname(req.url) || '/'
+      var route = layer.route
+
+      // skip this layer if the route doesn't match
+      if (path.toLowerCase().substr(0, route.length) !== route.toLowerCase()) {
+        return next(err)
+      }
+
+      // skip if route match does not border "/", ".", or end
+      var c = path.length > route.length && path[route.length]
+      if (c && c !== '/' && c !== '.') {
+        return next(err)
+      }
+
+      // trim off the part of the url that matches the route
+      if (route.length !== 0 && route !== '/') {
+        removed = route
+        req.url = protohost + req.url.substr(protohost.length + removed.length)
+
+        // ensure leading slash
+        if (!protohost && req.url[0] !== '/') {
+          req.url = '/' + req.url
+          slashAdded = true
+        }
+      }
+
+      // call the layer handle
+      call(layer.handle, route, err, req, res, next)
+    }
+    next()
+  }
 }
 
 // Invoke a route handle.
