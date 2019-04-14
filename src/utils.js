@@ -1,4 +1,6 @@
 
+import statuses from './statuses'
+
 // Parse the `str` url with fast-path short-cut.
 export function pathname (url) {
   let i = 0
@@ -79,4 +81,49 @@ export function getHeadersSent (res) {
   return typeof res.headersSent !== 'boolean'
     ? Boolean(res._header)
     : res.headersSent
+}
+
+// Get headers from Error object
+export function getErrorHeaders (err) {
+  if (!err.headers || typeof err.headers !== 'object') {
+    return undefined
+  }
+  const headers = Object.create(null)
+  for (const key of Object.keys(err.headers)) {
+    headers[key] = err.headers[key]
+  }
+  return headers
+}
+
+// Set response headers from an object
+export function setHeaders (res, headers) {
+  if (!headers) {
+    return
+  }
+  for (const key of Object.keys(headers)) {
+    res.setHeader(key, headers[key])
+  }
+}
+
+// Get status code from Error object.
+export function getErrorStatusCode (err) {
+  if (typeof err.status === 'number' && err.status >= 400 && err.status < 600) {
+    return err.status
+  }
+  if (typeof err.statusCode === 'number' && err.statusCode >= 400 && err.statusCode < 600) {
+    return err.statusCode
+  }
+}
+
+// Get message from Error object, fallback to status message.
+export function getErrorMessage (err, status, env) {
+  let msg
+  if (env !== 'production') {
+    msg = err.stack // typically includes err.message
+    // fallback to err.toString() when possible
+    if (!msg && typeof err.toString === 'function') {
+      msg = err.toString()
+    }
+  }
+  return msg || statuses[status]
 }
