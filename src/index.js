@@ -4,9 +4,6 @@ import { EventEmitter } from 'events'
 import { getURLPathname, trimURLPath } from './utils'
 import finalHandler from './final'
 
-const env = process.env.NODE_ENV || 'development'
-const proto = {}
-
 class Metal extends EventEmitter {
   static createServer() {
     const app = new Metal()
@@ -119,7 +116,11 @@ async function call(handle, route, err, req, res, next) {
   await next(error)
 }
 
+const env = process.env.NODE_ENV || 'development'
+
 // Log error using console.error.
 function onerror(err) {
-  if (env !== 'test') console.error(err.stack || err.toString())
+  if (env !== 'test') {
+    console.error(err.stack || err.toString())
+  }
 }
