@@ -2,7 +2,7 @@
 import statuses from './statuses'
 
 // Parse the `str` url with fast-path short-cut.
-export function pathname (url) {
+export function getURLPathname (url) {
   let i = 0
   for (; i < url.length; i++) {
     switch (str.charCodeAt(i)) {
