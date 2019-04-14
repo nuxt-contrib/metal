@@ -1,63 +1,32 @@
-import path from 'path'
-import { readJSONSync } from 'fs-extra'
-import jsonPlugin from 'rollup-plugin-json'
-import commonjsPlugin from 'rollup-plugin-commonjs'
-import licensePlugin from 'rollup-plugin-license'
-import replacePlugin from 'rollup-plugin-replace'
-import aliasPlugin from 'rollup-plugin-alias'
-import nodeResolvePlugin from 'rollup-plugin-node-resolve'
-import defu from 'defu'
-import consola from 'consola'
-import external from './external'
+const path = require('path')
+const { readJSONSync } = require('fs-extra')
+const commonjsPlugin = require('rollup-plugin-commonjs')
+const replacePlugin = require('rollup-plugin-replace')
+const builtins = require('./builtins')
 
-export default function rollupConfig({
-  rootDir = process.cwd(),
-  plugins = [],
-  input = 'src/index.js',
-  replace = {},
-  alias = {},
-  resolve = {
-    only: [
-      /lodash/
-    ]
+const rootDir = process.cwd()
+const input = 'src/index.js'
+const pkg = readJSONSync(path.resolve(rootDir, 'package.json'))
+const name = path.basename(pkg.name)
+
+module.exports = {
+  input: path.resolve(rootDir, input),
+  output: {
+    dir: path.resolve(rootDir, 'dist'),
+    entryFileNames: `${name}.js`,
+    chunkFileNames: `${name}-[name].js`,
+    format: 'cjs',
+    preferConst: true
   },
-  ...options
-}, pkg) {
-  if (!pkg) {
-    pkg = readJSONSync(path.resolve(rootDir, 'package.json'))
-  }
-
-  const name = path.basename(pkg.name.replace('-edge', ''))
-
-  return defu({}, options, {
-    input: path.resolve(rootDir, input),
-    output: {
-      dir: path.resolve(rootDir, 'dist'),
-      entryFileNames: `${name}.js`,
-      chunkFileNames: `${name}-[name].js`,
-      format: 'cjs',
-      preferConst: true
-    },
-    external,
-    plugins: [
-      aliasPlugin(alias),
-      replacePlugin({
-        exclude: 'node_modules/**',
-        delimiters: ['', ''],
-        values: {
-          __NODE_ENV__: process.env.NODE_ENV,
-          ...replace
-        }
-      }),
-      nodeResolvePlugin(resolve),
-      commonjsPlugin(),
-      jsonPlugin(),
-    ].concat(plugins),
-    onwarn(warning, warn) {
-      if (warning.plugin === 'rollup-plugin-license') {
-        return
+  external: [ builtins ],
+  plugins: [
+    replacePlugin({
+      exclude: 'node_modules/**',
+      delimiters: ['', ''],
+      values: {
+        __NODE_ENV__: process.env.NODE_ENV
       }
-      consola.warn(warning)
-    }
-  })
+    }),
+    commonjsPlugin()
+  ]
 }
