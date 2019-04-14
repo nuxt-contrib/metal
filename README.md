@@ -31,7 +31,6 @@ compromising performance, if not even improving it slightly.
 
 This module is largely based on the work of [TJ Holowaychuk][tj], [Douglas 
 Christopher Wilson][dw], [Jonathan Ong][jo] and the awesome people at [Joyent][j].
-
 This package is simply a massive restructuring of all original code, with only
 a few minor pieces removed and improved upon.
 
