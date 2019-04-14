@@ -1,7 +1,16 @@
 
 import statuses from './statuses'
-import { onFinished, isFinished } from './on-finished'
-import { encodeURL, getURLPathname, getHeadersSent, getResponseStatusCode } from './utils'
+import {
+  onFinished,
+  isFinished
+} from './on-finished'
+import { 
+  encodeURL, 
+  getURLPathname, 
+  getHeadersSent, 
+  getResponseStatusCode,
+  getErrorHeaders
+} from './utils'
 
 // Create a function to handle the final response.
 export default function finalHandler (req, res, options) {
@@ -54,18 +63,7 @@ export default function finalHandler (req, res, options) {
   }
 }
 
-// Get headers from Error object.
 
-function getErrorHeaders (err) {
-  if (!err.headers || typeof err.headers !== 'object') {
-    return undefined
-  }
-  const headers = Object.create(null)
-  for (const key of Object.keys(err.headers)) {
-    headers[key] = err.headers[key]
-  }
-  return headers
-}
 
 // Get message from Error object, fallback to status message.
 function getErrorMessage (err, status, env) {
