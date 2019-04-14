@@ -21,11 +21,10 @@ still try to specifically address Node 0.8 shortcomings.
   - utils-merge@1.0.1
 ```
 
-**nuxt-metal** is an attempt to provide a middleware framework with matching
-API and fully backwards-compatible, while fully supporting async middleware
-and offering a restructured codebase with many simplifications, cleanups and
-idiomatic rewrites conforming to idiomatic, modern JavaScript – without 
-compromising performance, if not even improving it slightly.
+**nuxt-metal** is an attempt to provide a fully backwards-compatible rewrite
+of connect in modern JavaScript, with added support for async middleware and a 
+restructured codebase with many simplifications, cleanups and idiomatic rewrites.
+All without compromising performance, if not improving it slightly.
 
 ## Acknowledgement
 
