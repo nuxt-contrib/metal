@@ -1,3 +1,7 @@
+
+// See this thread on StackOverflow for details:
+// https://stackoverflow.com/questions/54526179/node-js-difference-between-http-finish-event-response-close-event-and-respons
+
 import { listenOnce } from './utils'
 
 // Invoke callback when the response has finished
