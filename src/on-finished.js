@@ -67,14 +67,12 @@ function attachFinishedListener (msg, callback) {
 
 // Attach the listener to the message.
 function attachListener (msg, listener) {
-  var attached = msg.__onFinished
-
+  let attached = msg.__onFinished
   // create a private single listener with queue
   if (!attached || !attached.queue) {
     attached = msg.__onFinished = createListener(msg)
     attachFinishedListener(msg, attached)
   }
-
   attached.queue.push(listener)
 }
 
@@ -87,10 +85,10 @@ function createListener (msg) {
     if (!listener.queue) {
       return
     }
-    var queue = listener.queue
+    const queue = listener.queue
     listener.queue = null
-    for (var i = 0; i < queue.length; i++) {
-      queue[i](err, msg)
+    for (const qListener of queue) {
+      qListener(err, msg)
     }
   }
   listener.queue = []
