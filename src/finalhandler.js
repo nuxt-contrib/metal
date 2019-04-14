@@ -1,7 +1,6 @@
 
 import statuses from './statuses'
 import { encodeURL, getURLPathname } from './utils'
-var escapeHtml = require('./escape-html')
 var onFinished = require('./on-finished')
 
 var DOUBLE_SPACE_REGEXP = /\x20{2}/g
