@@ -1,9 +1,4 @@
 
-// Copyright(c) 2010 Sencha Inc.
-// Copyright(c) 2011 TJ Holowaychuk
-// Copyright(c) 2015 Douglas Christopher Wilson
-// MIT Licensed
-
 import http from 'http'
 import { EventEmitter } from 'events'
 import { getURLPathname, trimURLPath } from './utils'
