@@ -52,10 +52,6 @@ export default function finalHandler (req, res, options) {
   }
 }
 
-
-
-
-// Send response.
 function send (req, res, status, headers, message) {
   function write () {
     const body = JSON.stringify({ error: message })

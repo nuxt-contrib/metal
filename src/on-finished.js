@@ -18,7 +18,7 @@ module.exports = function onFinished (msg, listener) {
 }
 
 // Determine if message is already finished.
-function isFinished (msg) {
+export function isFinished (msg) {
   const socket = msg.socket
   if (typeof msg.finished === 'boolean') { // OutgoingMessage
     return Boolean(msg.finished || (socket && !socket.writable))
@@ -38,7 +38,6 @@ function attachFinishedListener (msg, callback) {
   function onFinish (error) {
     eeMsg.cancel()
     eeSocket.cancel()
-
     finished = true
     callback(error)
   }

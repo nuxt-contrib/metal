@@ -66,6 +66,40 @@ export function encodeUrl (url) {
     .replace(ENCODE_CHARS_REGEXP, encodeURI)
 }
 
+// Get the first event in a set of event emitters and event pairs.
+export function listenOnce (stuff, done) {
+  const cleanups = []
+  for (const arr of stuff) {
+    if (!Array.isArray(arr) || arr.length < 2) {
+      throw new TypeError('Array members must be [ee, ...events]')
+    }
+    const ee = arr[0]
+    let j = 1
+    for (; j < arr.length; j++) {
+      let event = arr[j]
+      let fn = (...args) => {
+        callback(event === 'error' ? args[0] : null, this, event, args)
+      }
+      ee.on(event, fn)
+      cleanups.push({ ee, event, fn })
+    }
+  }
+  function callback () {
+    cleanup()
+    done.apply(null, arguments)
+  }
+  function cleanup () {
+    for (const x of cleanups) {
+      x.ee.removeListener(x.event, x.fn)
+    }
+  }
+  function thunk (fn) {
+    done = fn
+  }
+  thunk.cancel = cleanup
+  return thunk
+}
+
 // Get status code from response.
 export function getResponseStatusCode (res) {
   const status = res.statusCode
