@@ -12,7 +12,9 @@ export default class Metal extends EventEmitter {
     const handler = async function () {
       await app.handle(arguments)
     }
-    handler.__proto__ = app.__proto__
+    for (const member in Metal.prototype) {
+      handler[member] = Metal.prototype[member]
+    }
     return handler
   }
   listen () {

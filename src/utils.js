@@ -5,7 +5,7 @@ import statuses from './statuses'
 export function getURLPathname (url) {
   let i = 0
   for (; i < url.length; i++) {
-    switch (str.charCodeAt(i)) {
+    switch (url.charCodeAt(i)) {
       case 0x3f: /* ? */
         return url.substring(0, i)
       case 0x23: /* # */
