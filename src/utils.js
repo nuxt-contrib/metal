@@ -13,6 +13,26 @@ export function pathname (url) {
   return url.substring(0, i)
 }
 
+// Parse a URL up to the end of the domain name
+export function trimURLPath(url) {
+  let i = 0
+  let s = 0
+  for (; i < url.length; i++) {
+    switch (url.charCodeAt(i)) {
+      case 47:
+        s++
+        if (i === 0) {
+          return
+        }
+        if (s > 2) {
+          return url.substr(0, i)
+        }
+        break
+    }
+  }
+  return s <= 2 ? undefined : url
+}
+
 // RegExp to match non-URL code points, *after* encoding (i.e. not including
 // "%") and including invalid escape sequences.
 const ENCODE_CHARS_REGEXP =
