@@ -6,13 +6,13 @@ import {
 
 import { 
   encodeURL, 
-  getURLPathname, 
   getHeadersSent, 
   getResponseStatusCode,
   getErrorHeaders,
   getErrorStatusCode,
   getErrorMessage,
-  setHeaders
+  setHeaders,
+  getResourceName
 } from './utils'
 
 // Create a function to handle the final response.
@@ -54,18 +54,6 @@ export default function finalHandler (req, res, options) {
 
 
 
-// Get resource name for the request.
-//
-// This is typically just the original pathname of the request
-// but will fallback to "resource" is that cannot be determined.
-
-function getResourceName (req) {
-  try {
-    return getURLPathname(req.originalUrl)
-  } catch (e) {
-    return 'resource'
-  }
-}
 
 // Send response.
 function send (req, res, status, headers, message) {

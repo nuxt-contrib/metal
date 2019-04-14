@@ -127,3 +127,12 @@ export function getErrorMessage (err, status, env) {
   }
   return msg || statuses[status]
 }
+
+// Get resource name for the request.
+export function getResourceName (req) {
+  try {
+    return getURLPathname(req.originalUrl)
+  } catch (e) {
+    return 'resource'
+  }
+}
