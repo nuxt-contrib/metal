@@ -30,7 +30,9 @@ export function trimURLPath(url) {
         break
     }
   }
-  return s <= 2 ? undefined : url
+  if (s > 2) {
+    return url
+  }
 }
 
 // RegExp to match non-URL code points, *after* encoding (i.e. not including
@@ -62,6 +64,19 @@ export function encodeUrl (url) {
     .replace(ENCODE_CHARS_REGEXP, encodeURI)
 }
 
-// Heavily based on the code from:
-// https://github.com/pillarjs/parseurl
-// https://github.com/pillarjs/encodeurl
+// Get status code from response.
+export function getResponseStatusCode (res) {
+  const status = res.statusCode
+  // default status code to 500 if outside valid range
+  if (typeof status !== 'number' || status < 400 || status > 599) {
+    return 500
+  }
+  return status
+}
+
+// Determine if the response headers have been sent.
+export function getHeadersSent (res) {
+  return typeof res.headersSent !== 'boolean'
+    ? Boolean(res._header)
+    : res.headersSent
+}

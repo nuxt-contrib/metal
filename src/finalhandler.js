@@ -1,17 +1,10 @@
 
 import statuses from './statuses'
-import { encodeURL, getURLPathname } from './utils'
-var onFinished = require('./on-finished')
-
-var DOUBLE_SPACE_REGEXP = /\x20{2}/g
-var NEWLINE_REGEXP = /\n/g
-
-var isFinished = onFinished.isFinished
-
-module.exports = finalhandler
+import { onFinished, isFinished } from './on-finished'
+import { encodeURL, getURLPathname, getHeadersSent, getResponseStatusCode } from './utils'
 
 // Create a function to handle the final response.
-function finalhandler (req, res, options) {
+export default function finalHandler (req, res, options) {
   var opts = options || {}
   var env = opts.env || process.env.NODE_ENV || 'development'
   // get error callback
@@ -22,7 +15,7 @@ function finalhandler (req, res, options) {
     var status
 
     // ignore 404 on in-flight response
-    if (!err && headersSent(res)) {
+    if (!err && getHeadersSent(res)) {
       debug('cannot 404 after headers sent')
       return
     }
@@ -51,7 +44,7 @@ function finalhandler (req, res, options) {
     }
 
     // cannot actually respond
-    if (headersSent(res)) {
+    if (getHeadersSent(res)) {
       req.socket.destroy()
       return
     }
@@ -119,24 +112,9 @@ function getResourceName (req) {
   }
 }
 
-// Get status code from response.
-function getResponseStatusCode (res) {
-  var status = res.statusCode
+// getResponseStatusCode
+// getHeadersSent
 
-  // default status code to 500 if outside valid range
-  if (typeof status !== 'number' || status < 400 || status > 599) {
-    status = 500
-  }
-
-  return status
-}
-
-// Determine if the response headers have been sent.
-function headersSent (res) {
-  return typeof res.headersSent !== 'boolean'
-    ? Boolean(res._header)
-    : res.headersSent
-}
 
 // Send response.
 function send (req, res, status, headers, message) {

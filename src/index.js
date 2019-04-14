@@ -6,8 +6,8 @@
 
 import http from 'http'
 import { EventEmitter } from 'events'
-import { getURLPathname } from './utils'
-import finalhandler from './finalhandler'
+import { getURLPathname, trimURLPath } from './utils'
+import finalHandler from './finalhandler'
 
 const env = process.env.NODE_ENV || 'development'
 const proto = {}
@@ -51,14 +51,13 @@ class Metal extends EventEmitter {
     return this
   }
   handle(req, res, out) {
-    var index = 0
-    var protohost = getProtohost(req.url) || ''
-    var removed = ''
-    var slashAdded = false
-    var stack = this.stack
+    let index = 0
+    let protohost = trimURLPath(req.url) || ''
+    let removed = ''
+    let slashAdded = false
+    let stack = this.stack
 
-    // final function handler
-    var done = out || finalhandler(req, res, {
+    let done = out || finalHandler(req, res, {
       env: env,
       onerror: logerror
     })
@@ -148,21 +147,4 @@ function call(handle, route, err, req, res, next) {
 // Log error using console.error.
 function logerror(err) {
   if (env !== 'test') console.error(err.stack || err.toString())
-}
-
-// Get get protocol + host for a URL.
-function getProtohost(url) {
-  if (url.length === 0 || url[0] === '/') {
-    return undefined
-  }
-
-  var searchIndex = url.indexOf('?')
-  var pathLength = searchIndex !== -1
-    ? searchIndex
-    : url.length
-  var fqdnIndex = url.substr(0, pathLength).indexOf('://')
-
-  return fqdnIndex !== -1
-    ? url.substr(0, url.indexOf('/', 3 + fqdnIndex))
-    : undefined
 }
