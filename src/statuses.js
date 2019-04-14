@@ -1,7 +1,5 @@
-// Package: statuses
-// Authors: Jonathan Ong, Douglas Christopher Wilson
 
-module.exports = {
+export default {
   100: 'Continue',
   101: 'Switching Protocols',
   102: 'Processing',

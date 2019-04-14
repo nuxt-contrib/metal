@@ -1,12 +1,8 @@
-// Copyright(c) 2014-2017 Douglas Christopher Wilson
 
-'use strict'
-
-var encodeUrl = require('./encodeurl')
+import statuses from './statuses'
+import { encodeURL, getURLPathname } from './utils'
 var escapeHtml = require('./escape-html')
 var onFinished = require('./on-finished')
-var parseUrl = require('./parseurl')
-var statuses = require('./statuses')
 
 var DOUBLE_SPACE_REGEXP = /\x20{2}/g
 var NEWLINE_REGEXP = /\n/g
@@ -142,7 +138,7 @@ function getErrorStatusCode (err) {
 
 function getResourceName (req) {
   try {
-    return parseUrl.original(req).pathname
+    return getURLPathname(req.originalUrl)
   } catch (e) {
     return 'resource'
   }
@@ -222,3 +218,5 @@ function setHeaders (res, headers) {
     res.setHeader(key, headers[key])
   }
 }
+
+// Copyright(c) 2014-2017 Douglas Christopher Wilson

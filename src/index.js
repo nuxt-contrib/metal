@@ -4,8 +4,8 @@
 // Copyright(c) 2015 Douglas Christopher Wilson
 // MIT Licensed
 
-// Module dependencies.
-var EventEmitter = require('events').EventEmitter
+import { EventEmitter } from 'events'
+import { getURLPathname } from './utils'
 const finalhandler = require('./finalhandler')
 const http = require('http')
 const parseUrl = require('./parseurl')
@@ -86,7 +86,7 @@ proto.handle = function handle(req, res, out) {
     }
 
     // route data
-    var path = parseUrl(req).pathname || '/'
+    var path = getURLPathname(req.url) || '/'
     var route = layer.route
 
     // skip this layer if the route doesn't match
