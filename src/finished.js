@@ -1,13 +1,8 @@
-// Package: https://github.com/jshttp/on-finished
-// Authors: Jonathan Ong, Douglas Christopher Wilson
+import { listenOnce } from './utils'
 
-const first = require('./ee-first')
-
-onFinished.isFinished = isFinished
-
-// Invoke callback when the response has finished, useful for
-// cleaning up resources afterwards.
-module.exports = function onFinished (msg, listener) {
+// Invoke callback when the response has finished
+// Useful for cleaning up resources afterwards
+export function onFinished (msg, listener) {
   if (isFinished(msg) !== false) {
     setImmediate(listener, null, msg)
     return msg
@@ -31,36 +26,29 @@ export function isFinished (msg) {
 
 // Attach a finished listener to the message.
 function attachFinishedListener (msg, callback) {
-  var eeMsg
-  var eeSocket
-  var finished = false
-
+  let eeMsg
+  let eeSocket
+  let finished = false
   function onFinish (error) {
     eeMsg.cancel()
     eeSocket.cancel()
     finished = true
     callback(error)
   }
-
   // finished on first message event
-  eeMsg = eeSocket = first([[msg, 'end', 'finish']], onFinish)
-
+  eeMsg = eeSocket = listenOnce([[msg, 'end', 'finish']], onFinish)
   function onSocket (socket) {
-    // remove listener
     msg.removeListener('socket', onSocket)
     if (finished || eeMsg !== eeSocket) {
       return
     }
     // finished on first socket event
-    eeSocket = first([[socket, 'error', 'close']], onFinish)
+    eeSocket = listenOnce([[socket, 'error', 'close']], onFinish)
   }
-
-  if (msg.socket) { // socket already assigned
+  if (msg.socket) {
     onSocket(msg.socket)
     return
   }
-
-  // wait for socket to be assigned
   msg.on('socket', onSocket)
 }
 
