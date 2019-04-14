@@ -7,7 +7,6 @@ var escapeHtml = require('./escape-html')
 var onFinished = require('./on-finished')
 var parseUrl = require('./parseurl')
 var statuses = require('./statuses')
-var unpipe = require('./unpipe')
 
 var DOUBLE_SPACE_REGEXP = /\x20{2}/g
 var NEWLINE_REGEXP = /\n/g
@@ -37,13 +36,9 @@ module.exports = finalhandler
 // Create a function to handle the final response.
 function finalhandler (req, res, options) {
   var opts = options || {}
-
-  // get environment
   var env = opts.env || process.env.NODE_ENV || 'development'
-
   // get error callback
   var onerror = opts.onerror
-
   return function (err) {
     var headers
     var msg
@@ -207,7 +202,7 @@ function send (req, res, status, headers, message) {
   }
 
   // unpipe everything from the request
-  unpipe(req)
+  req.unpipe()
 
   // flush the request
   onFinished(req, write)
