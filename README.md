@@ -1,9 +1,11 @@
 # nuxt-metal
 
-Nuxt currently depends on connect, a lightweight middleware framework for Node.
-connect currently has 10 dependencies, some of which haven't had updates in a 
-long time and are still written in ES5-style JavaScript and some still try to
-specifically address Node 0.8 shortcomings.
+Nuxt currently depends on [connect][cn], a lightweight middleware framework for 
+Node. [connect][cn] currently has 10 dependencies, some of which haven't had 
+updates in a long time. All are still written in ES5-style JavaScript and some 
+still try to specifically address Node 0.8 shortcomings.
+
+[cn]: https://github.com/senchalabs/connect
 
 ```
 - connect@3.6.6
