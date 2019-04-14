@@ -16,7 +16,7 @@ export function getURLPathname (url) {
 }
 
 // Parse a URL up to the end of the domain name
-export function trimURLPath(url) {
+export function trimURLPath (url) {
   let i = 0
   let s = 0
   for (; i < url.length; i++) {
@@ -56,9 +56,9 @@ const UNMATCHED_SURROGATE_PAIR_REPLACE = '$1\uFFFD$2'
 // not part of a valid sequence (`%20` will be left as-is, but `%foo` will
 // be encoded as `%25foo`).
 //
-// This encode is meant to be "safe" and does not throw errors. It will 
-// try as hard as it can to properly encode the given URL, including replacing 
-// any raw, unpaired surrogate pairs with the Unicode replacement character 
+// This encode is meant to be "safe" and does not throw errors. It will
+// try as hard as it can to properly encode the given URL, including replacing
+// any raw, unpaired surrogate pairs with the Unicode replacement character
 // prior to encoding.
 export function encodeUrl (url) {
   return String(url)

@@ -5,28 +5,28 @@ import { getURLPathname, trimURLPath } from './utils'
 import finalHandler from './final'
 
 class Metal extends EventEmitter {
-  static createServer() {
+  static createServer () {
     const app = new Metal()
     app.route = '/'
     app.stack = []
-    const handler = async function() {
+    const handler = async function () {
       await app.handle(arguments)
     }
     handler.__proto__ = app.__proto__
     return handler
   }
-  listen() {
+  listen () {
     const server = http.createServer(this)
     return server.listen.apply(server, arguments)
   }
-  use(route, handle) {
+  use (route, handle) {
     // default route to '/'
     if (typeof route !== 'string') {
       handle = route
       route = '/'
     }
     // wrap sub-apps
-    if (typeof handle.handle === 'function') { 
+    if (typeof handle.handle === 'function') {
       const server = handle
       server.route = route
       handle = async function (req, res, next) {
@@ -44,7 +44,7 @@ class Metal extends EventEmitter {
     this.stack.push({ route, handle })
     return this
   }
-  async handle(req, res, out) {
+  async handle (req, res, out) {
     let index = 0
     let protohost = trimURLPath(req.url) || ''
     let removed = ''
@@ -52,7 +52,7 @@ class Metal extends EventEmitter {
     let stack = this.stack
     let done = out || finalHandler(req, res, { env, onerror })
     req.originalUrl = req.originalUrl || req.url
-    async function next(err) {
+    async function next (err) {
       if (slashAdded) {
         req.url = req.url.substr(1)
         slashAdded = false
@@ -94,7 +94,7 @@ class Metal extends EventEmitter {
 }
 
 // Invoke a route handle.
-async function call(handle, route, err, req, res, next) {
+async function call (handle, route, err, req, res, next) {
   var arity = handle.length
   var error = err
   var hasError = Boolean(err)
@@ -119,7 +119,7 @@ async function call(handle, route, err, req, res, next) {
 const env = process.env.NODE_ENV || 'development'
 
 // Log error using console.error.
-function onerror(err) {
+function onerror (err) {
   if (env !== 'test') {
     console.error(err.stack || err.toString())
   }

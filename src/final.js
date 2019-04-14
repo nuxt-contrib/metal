@@ -4,9 +4,9 @@ import {
   isFinished
 } from './finished'
 
-import { 
-  encodeURL, 
-  getHeadersSent, 
+import {
+  encodeURL,
+  getHeadersSent,
   getResponseStatusCode,
   getErrorHeaders,
   getErrorStatusCode,
