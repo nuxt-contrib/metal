@@ -60,7 +60,7 @@ const UNMATCHED_SURROGATE_PAIR_REPLACE = '$1\uFFFD$2'
 // try as hard as it can to properly encode the given URL, including replacing
 // any raw, unpaired surrogate pairs with the Unicode replacement character
 // prior to encoding.
-export function encodeUrl (url) {
+export function encodeURL (url) {
   return String(url)
     .replace(UNMATCHED_SURROGATE_PAIR_REGEXP, UNMATCHED_SURROGATE_PAIR_REPLACE)
     .replace(ENCODE_CHARS_REGEXP, encodeURI)

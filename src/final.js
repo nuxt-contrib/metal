@@ -39,7 +39,7 @@ export default function finalHandler (req, res, options) {
       msg = getErrorMessage(err, status, env)
     } else {
       status = 404
-      msg = `Cannot ${req.method} ${encodeUrl(getResourceName(req))}`
+      msg = `Cannot ${req.method} ${encodeURL(getResourceName(req))}`
     }
     if (err && onerror) {
       setImmediate(onerror, err, req, res)

@@ -4,7 +4,7 @@ import { EventEmitter } from 'events'
 import { getURLPathname, trimURLPath } from './utils'
 import finalHandler from './final'
 
-class Metal extends EventEmitter {
+export default class Metal extends EventEmitter {
   static createServer () {
     const app = new Metal()
     app.route = '/'
