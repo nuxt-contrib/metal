@@ -8,24 +8,6 @@ var NEWLINE_REGEXP = /\n/g
 
 var isFinished = onFinished.isFinished
 
-// Create a minimal HTML document.
-function createHtmlDocument (message) {
-  var body = escapeHtml(message)
-    .replace(NEWLINE_REGEXP, '<br>')
-    .replace(DOUBLE_SPACE_REGEXP, ' &nbsp;')
-
-  return '<!DOCTYPE html>\n' +
-    '<html lang="en">\n' +
-    '<head>\n' +
-    '<meta charset="utf-8">\n' +
-    '<title>Error</title>\n' +
-    '</head>\n' +
-    '<body>\n' +
-    '<pre>' + body + '</pre>\n' +
-    '</body>\n' +
-    '</html>\n'
-}
-
 module.exports = finalhandler
 
 // Create a function to handle the final response.
@@ -70,7 +52,6 @@ function finalhandler (req, res, options) {
 
     // cannot actually respond
     if (headersSent(res)) {
-      debug('cannot %d after headers sent', status)
       req.socket.destroy()
       return
     }
@@ -86,15 +67,10 @@ function getErrorHeaders (err) {
   if (!err.headers || typeof err.headers !== 'object') {
     return undefined
   }
-
-  var headers = Object.create(null)
-  var keys = Object.keys(err.headers)
-
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i]
+  const headers = Object.create(null)
+  for (const key of Object.keys(err.headers)) {
     headers[key] = err.headers[key]
   }
-
   return headers
 }
 
@@ -166,7 +142,7 @@ function headersSent (res) {
 function send (req, res, status, headers, message) {
   function write () {
     // response body
-    var body = createHtmlDocument(message)
+    var body = JSON.stringify({ error: message })
 
     // response status
     res.statusCode = status
@@ -180,7 +156,7 @@ function send (req, res, status, headers, message) {
     res.setHeader('X-Content-Type-Options', 'nosniff')
 
     // standard headers
-    res.setHeader('Content-Type', 'text/html; charset=utf-8')
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
     res.setHeader('Content-Length', Buffer.byteLength(body, 'utf8'))
 
     if (req.method === 'HEAD') {
