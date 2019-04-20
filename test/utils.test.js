@@ -5,12 +5,18 @@ var assert = require('assert')
 
 var first = require('..')
 
-describe('first', function () {
-  var ee1 = new EventEmitter()
-  var ee2 = new EventEmitter()
-  var ee3 = new EventEmitter()
+let ee1
+let ee2
+let ee3
 
-  it('should require array argument', function () {
+describe('first', () => {
+  beforeAll(() => {
+    ee1 = new EventEmitter()
+    ee2 = new EventEmitter()
+    ee3 = new EventEmitter()
+  })
+
+  test('should require array argument', () => {
     assert.throws(first.bind())
     assert.throws(first.bind(null, 'string'))
     assert.throws(first.bind(null, 42))
