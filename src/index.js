@@ -2,20 +2,20 @@
 import http from 'http'
 import { EventEmitter } from 'events'
 import { getURLPathname, trimURLPath } from './utils'
-import finalHandler from './final'
+import handler from './handler'
 
 export default class Metal extends EventEmitter {
   static createServer () {
     const app = new Metal()
     app.route = '/'
     app.stack = []
-    const handler = async function () {
+    const appHandler = async function () {
       await app.handle(arguments)
     }
     for (const member in Metal.prototype) {
-      handler[member] = Metal.prototype[member]
+      appHandler[member] = Metal.prototype[member]
     }
-    return handler
+    return appHandler
   }
   listen () {
     const server = http.createServer(this)
@@ -52,7 +52,7 @@ export default class Metal extends EventEmitter {
     let removed = ''
     let slashAdded = false
     let stack = this.stack
-    let done = out || finalHandler(req, res, { env, onerror })
+    let done = out || handler(req, res, { env, onerror })
     req.originalUrl = req.originalUrl || req.url
     async function next (err) {
       if (slashAdded) {

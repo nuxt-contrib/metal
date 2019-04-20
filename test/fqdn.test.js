@@ -1,15 +1,14 @@
 
-var assert = require('assert');
-var connect = require('..');
-var http = require('http');
-var rawrequest = require('./support/rawagent')
+import metal from '../../src/index'
+import http from 'http'
+import rawrequest from './support/rawagent'
 
-describe('app.use()', function(){
-  var app;
+describe('app.use()', () => {
+  let app
 
-  beforeEach(function(){
-    app = connect();
-  });
+  beforeEach(() => {
+    app = connect()
+  })
 
   it('should not obscure FQDNs', function(done){
     app.use(function(req, res){
