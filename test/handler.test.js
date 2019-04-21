@@ -1,24 +1,24 @@
-var Buffer = require('safe-buffer').Buffer
-var finalhandler = require('..')
-var http = require('http')
-var utils = require('./support/utils')
+import http from 'http'
+import { Buffer } from 'safe-buffer'
+import handler from '../../src/handler'
+import {
+  createServer,
+  createError,
+  createSlowWriteStream,
+  rawrequest,
+  request,
+  shouldHaveStatusMessage,
+  shouldNotHaveBody,
+  shouldNotHaveHeader
+} from './support/utils'
 
-var assert = utils.assert
-var createError = utils.createError
-var createServer = utils.createServer
-var createSlowWriteStream = utils.createSlowWriteStream
-var rawrequest = utils.rawrequest
-var request = utils.request
-var shouldHaveStatusMessage = utils.shouldHaveStatusMessage
-var shouldNotHaveBody = utils.shouldNotHaveBody
-var shouldNotHaveHeader = utils.shouldNotHaveHeader
+const describeStatusMessage = !/statusMessage/
+  .test(http.IncomingMessage.toString())
+    ? describe.skip
+    : describe
 
-var describeStatusMessage = !/statusMessage/.test(http.IncomingMessage.toString())
-  ? describe.skip
-  : describe
-
-describe('finalhandler(req, res)', function () {
-  describe('headers', function () {
+describe('finalhandler(req, res)', () => {
+  describe('headers', () => {
     it('should ignore err.headers without status code', function (done) {
       request(createServer(createError('oops!', {
         headers: { 'X-Custom-Header': 'foo' }
@@ -79,7 +79,7 @@ describe('finalhandler(req, res)', function () {
     })
   })
 
-  describe('status code', function () {
+  describe('status code', () => {
     it('should 404 on no error', function (done) {
       request(createServer())
         .get('/')
@@ -175,7 +175,7 @@ describe('finalhandler(req, res)', function () {
     })
   })
 
-  describeStatusMessage('status message', function () {
+  describeStatusMessage('status message', () => {
     it('should be "Not Found" on no error', function (done) {
       request(createServer())
         .get('/')
@@ -212,7 +212,7 @@ describe('finalhandler(req, res)', function () {
     })
   })
 
-  describe('404 response', function () {
+  describe('404 response', () => {
     it('should include method and pathname', function (done) {
       request(createServer())
         .get('/foo')
@@ -294,7 +294,7 @@ describe('finalhandler(req, res)', function () {
     })
   })
 
-  describe('error response', function () {
+  describe('error response', () => {
     it('should include error stack', function (done) {
       request(createServer(createError('boom!')))
         .get('/foo')
@@ -346,7 +346,7 @@ describe('finalhandler(req, res)', function () {
         .expect(501, /<pre>Not Implemented<\/pre>/, done)
     })
 
-    describe('when there is a request body', function () {
+    describe('when there is a request body', () => {
       it('should not hang/error when unread', function (done) {
         var buf = Buffer.alloc(1024 * 16, '.')
         var server = createServer(new Error('boom!'))
@@ -361,7 +361,7 @@ describe('finalhandler(req, res)', function () {
         var buf = Buffer.alloc(1024 * 16, '.')
         var server = createServer(function (req, res, next) {
           req.pipe(stream)
-          process.nextTick(function () {
+          process.nextTick(() => {
             next(new Error('boom!'))
           })
         })
@@ -377,7 +377,7 @@ describe('finalhandler(req, res)', function () {
         var buf = Buffer.alloc(1024 * 16, '.')
         var server = createServer(function (req, res, next) {
           // read off the request
-          req.once('end', function () {
+          req.once('end', () => {
             next(new Error('boom!'))
           })
           req.resume()
@@ -390,7 +390,7 @@ describe('finalhandler(req, res)', function () {
       })
     })
 
-    describe('when res.statusCode set', function () {
+    describe('when res.statusCode set', () => {
       it('should keep when >= 400', function (done) {
         var server = http.createServer(function (req, res) {
           var done = finalhandler(req, res)
@@ -442,7 +442,7 @@ describe('finalhandler(req, res)', function () {
       })
     })
 
-    describe('when res.statusCode undefined', function () {
+    describe('when res.statusCode undefined', () => {
       it('should set to 500', function (done) {
         var server = http.createServer(function (req, res) {
           var done = finalhandler(req, res)
@@ -457,13 +457,13 @@ describe('finalhandler(req, res)', function () {
     })
   })
 
-  describe('request started', function () {
+  describe('request started', () => {
     it('should not respond', function (done) {
       var server = http.createServer(function (req, res) {
         var done = finalhandler(req, res)
         res.statusCode = 301
         res.write('0')
-        process.nextTick(function () {
+        process.nextTick(() => {
           done()
           res.end('1')
         })
@@ -479,7 +479,7 @@ describe('finalhandler(req, res)', function () {
         var done = finalhandler(req, res)
         res.statusCode = 301
         res.write('0')
-        process.nextTick(function () {
+        process.nextTick(() => {
           done(createError('too many requests', {
             status: 429,
             headers: { 'Retry-After': '5' }
@@ -494,7 +494,7 @@ describe('finalhandler(req, res)', function () {
     })
   })
 
-  describe('onerror', function () {
+  describe('onerror', () => {
     it('should be invoked when error', function (done) {
       var err = new Error('boom!')
       var error
@@ -505,7 +505,7 @@ describe('finalhandler(req, res)', function () {
 
       request(createServer(err, { onerror: log }))
         .get('/')
-        .end(function () {
+        .end(() => {
           assert.equal(error, err)
           done()
         })
