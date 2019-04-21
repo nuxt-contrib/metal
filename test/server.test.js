@@ -42,7 +42,7 @@ describe('app', () => {
 
     request(server)
     .get('/')
-    .expect(200, 'hello, world!', done);
+    .expect(200, 'hello, world!', done)
   })
 
   test('should be a callable function', (done) => {
@@ -75,34 +75,34 @@ describe('app', () => {
     }
     request(http.createServer(handler))
       .get('/')
-      .expect(200, 'oh, no!', done);
+      .expect(200, 'oh, no!', done)
   })
 
   test('should invoke callback on error', (done) => {
     const app = Metal.createServer()
     app.use((req, res) => {
-      throw new Error('boom!');
-    });
+      throw new Error('boom!')
+    })
 
     function handler(req, res) {
-      res.write('oh, ');
+      res.write('oh, ')
       app(req, res, function(err) {
-        res.end(err.message);
-      });
+        res.end(err.message)
+      })
     }
 
-    var server = http.createServer(handler);
+    var server = http.createServer(handler)
 
     request(server)
     .get('/')
-    .expect(200, 'oh, boom!', done);
+    .expect(200, 'oh, boom!', done)
   })
 
   test('should work as middleware', (done) => {
     // custom server handler array
-    var handlers = [connect(), function(req, res, next){
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end('Ok');
+    var handlers = [connect(), (req, res, next) => {
+      res.writeHead(200, {'Content-Type': 'text/plain'})
+      res.end('Ok')
     }];
 
     // execute callbacks in sequence
@@ -110,28 +110,28 @@ describe('app', () => {
     function run(req, res){
       if (handlers[n]) {
         handlers[n++](req, res, () => {
-          run(req, res);
-        });
+          run(req, res)
+        })
       }
     }
 
     // create a non-connect server
-    var server = http.createServer(run);
+    var server = http.createServer(run)
 
     request(server)
     .get('/')
-    .expect(200, 'Ok', done);
-  });
+    .expect(200, 'Ok', done)
+  })
 
   test('should escape the 500 response body', (done) => {
-    app.use(function(req, res, next){
-      next(new Error('error!'));
-    });
+    app.use((req, res, next) => {
+      next(new Error('error!'))
+    })
     request(app)
     .get('/')
     .expect(/Error: error!<br>/)
     .expect(/<br> &nbsp; &nbsp;at/)
-    .expect(500, done);
+    .expect(500, done)
   })
 
   describe('404 handler', () => {
@@ -139,20 +139,20 @@ describe('app', () => {
       rawrequest(app)
         .get('/foo/<script>stuff\'n</script>')
         .expect(404, />Cannot GET \/foo\/%3Cscript%3Estuff&#39;n%3C\/script%3E</, done)
-    });
+    })
 
     test('shoud not fire after headers sent', (done) => {
       const app = Metal.createServer()
 
-      app.use(function(req, res, next){
-        res.write('body');
-        res.end();
-        process.nextTick(next);
+      app.use((req, res, next) => {
+        res.write('body')
+        res.end()
+        process.nextTick(next)
       })
 
       request(app)
       .get('/')
-      .expect(200, done);
+      .expect(200, done)
     })
 
     test('shoud have no body for HEAD', (done) => {
@@ -170,73 +170,73 @@ describe('app', () => {
     test('should have escaped response body', (done) => {
       const app = Metal.createServer()
 
-      app.use(function(req, res, next){
-        throw new Error('<script>alert()</script>');
+      app.use((req, res, next) => {
+        throw new Error('<script>alert()</script>')
       })
 
       request(app)
       .get('/')
-      .expect(500, /&lt;script&gt;alert\(\)&lt;\/script&gt;/, done);
+      .expect(500, /&lt;script&gt;alert\(\)&lt;\/script&gt;/, done)
     })
 
     it('should use custom error code', (done) => {
       const app = Metal.createServer()
 
-      app.use(function(req, res, next){
-        var err = new Error('ack!');
+      app.use((req, res, next) => {
+        var err = new Error('ack!')
         err.status = 503;
         throw err;
       })
 
       request(app)
       .get('/')
-      .expect(503, done);
+      .expect(503, done)
     })
 
     it('should keep error statusCode', (done) => {
       const app = Metal.createServer()
 
-      app.use(function(req, res, next){
+      app.use((req, res, next) => {
         res.statusCode = 503;
-        throw new Error('ack!');
+        throw new Error('ack!')
       })
 
       request(app)
       .get('/')
-      .expect(503, done);
+      .expect(503, done)
     })
 
     test('shoud not fire after headers sent', (done) => {
       const app = Metal.createServer()
 
-      app.use(function(req, res, next){
-        res.write('body');
-        res.end();
-        process.nextTick(function() {
-          next(new Error('ack!'));
-        });
+      app.use((req, res, next) => {
+        res.write('body')
+        res.end()
+        process.nextTick(() => {
+          next(new Error('ack!'))
+        })
       })
 
       request(app)
       .get('/')
-      .expect(200, done);
+      .expect(200, done)
     })
 
     test('shoud have no body for HEAD', (done) => {
       const app = Metal.createServer()
 
-      app.use(function(req, res, next){
-        throw new Error('ack!');
-      });
+      app.use((req, res, next) => {
+        throw new Error('ack!')
+      })
 
       request(app)
-      .head('/')
-      .expect(500)
-      .expect(shouldHaveNoBody())
-      .end(done)
-    });
-  });
-});
+        .head('/')
+        .expect(500)
+        .expect(shouldHaveNoBody())
+        .end(done)
+    })
+  })
+})
 
 function shouldHaveNoBody () {
   return function (res) {
