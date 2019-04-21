@@ -26,18 +26,14 @@ describe('onFinished(res, listener)', () => {
         })
         setTimeout(res.end.bind(res), 0)
       })
-
       sendGet(server)
     })
 
     test('should fire when called after finish', (done) => {
-      var server = http.createServer((req, res) => {
-        onFinished(res, () => {
-          onFinished(res, done)
-        })
+      const server = http.createServer((req, res) => {
+        onFinished(res, () => onFinished(res, done))
         setTimeout(res.end.bind(res), 0)
       })
-
       sendGet(server)
     })
   })
@@ -70,6 +66,7 @@ describe('onFinished(res, listener)', () => {
   describe('when requests pipelined', () => {
     test('should fire for each request', (done) => {
       let count = 0
+      let socket
       const responses = []
       const server = http.createServer((req, res) => {
         responses.push(res)
@@ -77,42 +74,32 @@ describe('onFinished(res, listener)', () => {
           assert.ifError(err)
           assert.strictEqual(responses[0], res)
           responses.shift()
-
           if (responses.length === 0) {
             socket.end()
             return
           }
-
           responses[0].end('response b')
         })
-
-        onFinished(req, function (err) {
-          assert.ifError(err)
-
+        onFinished(req, (err) => {
+          expect(err).toBeTruthy()
           if (++count !== 2) {
             return
           }
-
-          assert.strictEqual(responses.length, 2)
+          expect(responses.length).toStrictEqual(2)
           responses[0].end('response a')
         })
-
         if (responses.length === 1) {
           // second request
           writeRequest(socket)
         }
-
         req.resume()
       })
-      var socket
-
       server.listen(() => {
-        var data = ''
-        socket = net.connect(this.address().port, () => {
+        let data = ''
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
-
-        socket.on('data', function (chunk) {
+        socket.on('data', (chunk) => {
           data += chunk.toString('binary')
         })
         socket.on('end', () => {
@@ -126,37 +113,33 @@ describe('onFinished(res, listener)', () => {
 
   describe('when response errors', () => {
     test('should fire with error', (done) => {
-      var server = http.createServer((req, res) => {
+      let socket
+      const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
-          assert.ok(err)
+          expect(err).toBeTruthy()
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
       server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
     })
 
     test('should include the response object', (done) => {
-      var server = http.createServer((req, res) => {
+      let socket
+      const server = http.createServer((req, res) => {
         onFinished(res, (err, msg) => {
           assert.ok(err)
-          assert.strictEqual(msg, res)
+          expect(msg).toStrictEqual(res)
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
       server.listen(() => {
         socket = net.connect(this.address().port, () => {
           writeRequest(this, true)
