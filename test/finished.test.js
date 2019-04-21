@@ -218,37 +218,30 @@ describe('isFinished(res)', () => {
   })
 
   describe('when requests pipelined', () => {
-    test('should have correct state when socket shared', function (done) {
-      var count = 0
-      var responses = []
-      var server = http.createServer(function (req, res) {
+    test('should have correct state when socket shared', (done) => {
+      let socket
+      let count = 0
+      const responses = []
+      const server = http.createServer(function (req, res) {
         responses.push(res)
-
-        onFinished(req, function (err) {
-          assert.ifError(err)
-
+        onFinished(req, (err) => {
+          expect(err).toBeTruthy()
           if (++count !== 2) {
             return
           }
-
-          assert.ok(!onFinished.isFinished(responses[0]))
-          assert.ok(!onFinished.isFinished(responses[1]))
-
+          expect(onFinished.isFinished(responses[0])).toBeFalsy()
+          expect(onFinished.isFinished(responses[1])).toBeFalsy()
           responses[0].end()
           responses[1].end()
           socket.end()
           server.close(done)
         })
-
         if (responses.length === 1) {
           // second request
           writeRequest(socket)
         }
-
         req.resume()
       })
-      var socket
-
       server.listen(() => {
         socket = net.connect(this.address().port, () => {
           writeRequest(this)
@@ -256,13 +249,13 @@ describe('isFinished(res)', () => {
       })
     })
 
-    test('should handle aborted requests', function (done) {
-      var count = 0
-      var requests = 0
-      var server = http.createServer(function (req, res) {
+    test('should handle aborted requests', (done) => {
+      let socket
+      let count = 0
+      let requests = 0
+      const server = http.createServer((req, res) => {
         requests++
-
-        onFinished(req, function (err) {
+        onFinished(req, (err) => {
           switch (++count) {
             case 1:
               assert.ifError(err)
@@ -275,18 +268,14 @@ describe('isFinished(res)', () => {
               break
           }
         })
-
         req.resume()
-
         if (requests === 1) {
           // second request
           writeRequest(socket, true)
         }
       })
-      var socket
-
       server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
       })
@@ -294,21 +283,19 @@ describe('isFinished(res)', () => {
   })
 
   describe('when response errors', () => {
-    test('should return true', function (done) {
-      var server = http.createServer(function (req, res) {
-        onFinished(res, function (err) {
-          assert.ok(err)
-          assert.ok(onFinished.isFinished(res))
+    test('should return true', (done) => {
+      let socket
+      const server = http.createServer((req, res) => {
+        onFinished(res, (err) => {
+          expect(err).toBeTruthy()
+          expect(onFinished.isFinished(res)).toBeTruth()
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
       server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
@@ -316,9 +303,9 @@ describe('isFinished(res)', () => {
   })
 
   describe('when the response aborts', () => {
-    test('should return true', function (done) {
-      var client
-      var server = http.createServer(function (req, res) {
+    test('should return true', (done) => {
+      let client
+      const server = http.createServer((req, res) => {
         onFinished(res, function (err) {
           assert.ifError(err)
           assert.ok(onFinished.isFinished(res))
