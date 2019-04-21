@@ -44,7 +44,7 @@ describe('first', () => {
     ee2.emit('b', 1, 2, 3)
   })
 
-  it('it should return an error if event === error', function (done) {
+  test('it should return an error if event === error', (done) => {
     first([
       [ee1, 'error', 'b', 'c'],
       [ee2, 'error', 'b', 'c'],
@@ -59,7 +59,7 @@ describe('first', () => {
     ee3.emit('error', new Error('boom'))
   })
 
-  it('should cleanup after itself', function (done) {
+  test('should cleanup after itself', (done) => {
     first([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
@@ -73,11 +73,10 @@ describe('first', () => {
       })
       done()
     })
-
     ee1.emit('a')
   })
 
-  it('should return a thunk', function (done) {
+  test('should return a thunk', (done) => {
     var thunk = first([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
@@ -94,7 +93,7 @@ describe('first', () => {
     ee2.emit('b', 1, 2, 3)
   })
 
-  it('should not emit after thunk.cancel()', function (done) {
+  test('should not emit after thunk.cancel()', function (done) {
     var thunk = first([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],

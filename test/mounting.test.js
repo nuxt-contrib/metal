@@ -1,8 +1,7 @@
 
-var assert = require('assert');
-var connect = require('..');
-var http = require('http');
-var request = require('supertest');
+import http from 'http'
+import metal from '../../src/index'
+import request from 'supertest'
 
 describe('app.use()', function(){
   var app;
