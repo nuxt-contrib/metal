@@ -238,18 +238,18 @@ describe('isFinished(res)', () => {
         req.resume()
       })
       server.listen(function () {
-        socket = net.connect(this.address().port, () => {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
       })
     })
 
     test('should handle aborted requests', (done) => {
-      var count = 0
-      var requests = 0
+      let socket
+      let count = 0
+      let requests = 0
       const server = http.createServer((req, res) => {
         requests++
-
         onFinished(req, (err) => {
           switch (++count) {
             case 1:
@@ -263,18 +263,14 @@ describe('isFinished(res)', () => {
               break
           }
         })
-
         req.resume()
-
         if (requests === 1) {
           // second request
           writeRequest(socket, true)
         }
       })
-      var socket
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
       })
@@ -283,18 +279,16 @@ describe('isFinished(res)', () => {
 
   describe('when response errors', () => {
     test('should return true', (done) => {
+      let socket
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ok(err)
           assert.ok(onFinished.isFinished(res))
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
       server.listen(() => {
         socket = net.connect(this.address().port, () => {
           writeRequest(this, true)
@@ -305,7 +299,7 @@ describe('isFinished(res)', () => {
 
   describe('when the response aborts', () => {
     test('should return true', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ifError(err)
@@ -314,8 +308,8 @@ describe('isFinished(res)', () => {
         })
         setTimeout(client.abort.bind(client), 0)
       })
-      server.listen(() => {
-        var port = this.address().port
+      server.listen(function () {
+        let port = this.address().port
         client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
@@ -331,7 +325,6 @@ describe('onFinished(req, listener)', () => {
         req.resume()
         setTimeout(res.end.bind(res), 0)
       })
-
       sendGet(server)
     })
 
@@ -345,7 +338,6 @@ describe('onFinished(req, listener)', () => {
         req.resume()
         setTimeout(res.end.bind(res), 0)
       })
-
       sendGet(server)
     })
 
@@ -357,46 +349,38 @@ describe('onFinished(req, listener)', () => {
         req.resume()
         setTimeout(res.end.bind(res), 0)
       })
-
       sendGet(server)
     })
   })
 
   describe('when using keep-alive', () => {
     test('should fire for each request', (done) => {
-      var called = false
+      let socket
+      let called = false
       const server = http.createServer((req, res) => {
-        var data = ''
-
+        let data = ''
         onFinished(req, (err) => {
           assert.ifError(err)
           assert.strictEqual(data, 'A')
-
           if (called) {
             socket.end()
             server.close()
             done(called !== req ? null : new Error('fired twice on same req'))
             return
           }
-
           called = req
-
           res.end()
           writeRequest(socket, true)
         })
-
         req.setEncoding('utf8')
         req.on('data', (str) => {
           data += str
         })
-
         socket.write('1\r\nA\r\n')
         socket.write('0\r\n\r\n')
       })
-      var socket
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
@@ -405,39 +389,35 @@ describe('onFinished(req, listener)', () => {
 
   describe('when request errors', () => {
     test('should fire with error', (done) => {
+      let socket
       const server = http.createServer((req, res) => {
         onFinished(req, (err) => {
           assert.ok(err)
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function() {
           writeRequest(this, true)
         })
       })
     })
 
     test('should include the request object', (done) => {
+      let socket
       const server = http.createServer((req, res) => {
         onFinished(req, (err, msg) => {
           assert.ok(err)
           assert.strictEqual(msg, req)
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
@@ -446,15 +426,17 @@ describe('onFinished(req, listener)', () => {
 
   describe('when requests pipelined', () => {
     test('should handle socket errors', (done) => {
-      var count = 0
+      let socket
+      let count = 0
+      let wait = 3
       const server = http.createServer((req) => {
-        var num = ++count
-
+        const num = ++count
         onFinished(req, (err) => {
           assert.ok(err)
-          if (!--wait) server.close(done)
+          if (!--wait) {
+            server.close(done)
+          }
         })
-
         if (num === 1) {
           // second request
           writeRequest(socket, true)
@@ -465,17 +447,15 @@ describe('onFinished(req, listener)', () => {
           req.resume()
         }
       })
-      var socket
-      var wait = 3
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
-
         socket.on('close', () => {
           assert.strictEqual(count, 2)
-          if (!--wait) server.close(done)
+          if (!--wait) {
+            server.close(done)
+          }
         })
       })
     })
@@ -483,13 +463,13 @@ describe('onFinished(req, listener)', () => {
 
   describe('when the request aborts', () => {
     test('should execute the callback', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         onFinished(req, close(server, done))
         setTimeout(client.abort.bind(client), 0)
       })
-      server.listen(() => {
-        var port = this.address().port
+      server.listen(function () {
+        let port = this.address().port
         client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
