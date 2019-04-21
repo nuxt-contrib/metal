@@ -127,7 +127,7 @@ describe('with a connect app', () => {
       .expect(200, '/blog/post/1', done)
   })
 
-  test('should adjust req.url', function(done){
+  test('should adjust req.url', (done) => {
     app.use('/blog', (req, res) => {
       res.end(req.url)
     })
@@ -137,7 +137,7 @@ describe('with a connect app', () => {
       .expect(200, '/post/1', done)
   })
 
-  test('should strip trailing slash', function(done){
+  test('should strip trailing slash', (done) => {
     const blog = Metal.createServer()
     blog.use((req, res) => {
       expect(req.url).toBe('/')
@@ -182,85 +182,73 @@ describe('with a node app', () => {
 })
 
 describe('error handling', function(){
-  test('should send errors to airty 4 fns', function(done){
-    app.use(function(req, res, next){
+  test('should send errors to airty 4 fns', (done) => {
+    app.use((req, res, next) => {
       next(new Error('msg'))
     })
-    app.use(function(err, req, res, next){
-      res.end('got error ' + err.message)
+    app.use((err, req, res, next) => {
+      res.end(`got error ${err.message}`)
     })
-
     request(app)
-    .get('/')
-    .expect('got error msg', done)
+      .get('/')
+      .expect('got error msg', done)
   })
 
-  test('should skip to non-error middleware', function(done){
-    var invoked = false
-
-    app.use(function(req, res, next){
+  test('should skip to non-error middleware', (done) => {
+    le tinvoked = false
+    app.use((req, res, next) => {
       next(new Error('msg'))
     })
-    app.use(function(req, res, next){
+    app.use((req, res, next) => {
       invoked = true
       next()
     })
-    app.use(function(err, req, res, next){
+    app.use((err, req, res, next) => {
       res.end(invoked ? 'invoked' : err.message)
     })
-
     request(app)
-    .get('/')
-    .expect(200, 'msg', done)
+      .get('/')
+      .expect(200, 'msg', done)
   })
 
-  test('should start at error middleware declared after error', function(done){
-    var invoked = false
-
-    app.use(function(err, req, res, next){
-      res.end('fail: ' + err.message)
+  test('should start at error middleware declared after error', (done) => {
+    app.use((err, req, res, next) => {
+      res.end(`fail: ${err.message}`)
     })
-    app.use(function(req, res, next){
+    app.use((req, res, next) => {
       next(new Error('boom!'))
     })
-    app.use(function(err, req, res, next){
-      res.end('pass: ' + err.message)
+    app.use((err, req, res, next) => {
+      res.end(`pass: ${err.message}`)
     })
-
     request(app)
-    .get('/')
-    .expect(200, 'pass: boom!', done)
+      .get('/')
+      .expect(200, 'pass: boom!', done)
   })
 
-  test('should stack error fns', function(done){
-    app.use(function(req, res, next){
-      next(new Error('msg'))
-    })
-    app.use(function(err, req, res, next){
+  test('should stack error fns', (done) => {
+    app.use((req, res, next) => next(new Error('msg')))
+    app.use((err, req, res, next) => {
       res.setHeader('X-Error', err.message)
       next(err)
     })
-    app.use(function(err, req, res, next){
-      res.end('got error ' + err.message)
+    app.use((err, req, res, next) => {
+      res.end(`got error ${err.message}`)
     })
-
     request(app)
-    .get('/')
-    .expect('X-Error', 'msg')
-    .expect(200, 'got error msg', done)
+      .get('/')
+      .expect('X-Error', 'msg')
+      .expect(200, 'got error msg', done)
   })
 
-  test('should invoke error stack even when headers sent', function(done){
-    app.use(function(req, res, next){
+  test('should invoke error stack even when headers sent', (done) => {
+    app.use((req, res, next) => {
       res.end('0')
       next(new Error('msg'))
     })
-    app.use(function(err, req, res, next){
-      done()
-    })
-
+    app.use((err, req, res, next) => done())
     request(app)
-    .get('/')
-    .end(function(){})
+      .get('/')
+      .end(function(){})
   })
 })
