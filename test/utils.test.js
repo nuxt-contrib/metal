@@ -17,10 +17,10 @@ describe('first', () => {
   })
 
   test('should require array argument', () => {
-    assert.throws(first.bind())
-    assert.throws(first.bind(null, 'string'))
-    assert.throws(first.bind(null, 42))
-    assert.throws(first.bind(null, {}))
+    expect(first.bind()).toThrow()
+    expect(first.bind(null, 'string')).toThrow()
+    expect(first.bind(null, 42)).toThrow()
+    expect(first.bind(null, {})).toThrow()
   })
 
   it('should require array of arrays argument', function () {
