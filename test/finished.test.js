@@ -9,8 +9,8 @@ describe('onFinished(res, listener)', () => {
   })
 
   describe('when the response finishes', () => {
-    test('should fire the callback', function (done) {
-      var server = http.createServer(function (req, res) {
+    test('should fire the callback', (done) => {
+      const server = http.createServer(function (req, res) {
         onFinished(res, done)
         setTimeout(res.end.bind(res), 0)
       })
@@ -19,8 +19,8 @@ describe('onFinished(res, listener)', () => {
     })
 
     test('should include the response object', function (done) {
-      var server = http.createServer(function (req, res) {
-        onFinished(res, function (err, msg) {
+      const server = http.createServer(function (req, res) {
+        onFinished(res, (err, msg) => {
           assert.ok(!err)
           assert.strictEqual(msg, res)
           done()
@@ -31,8 +31,8 @@ describe('onFinished(res, listener)', () => {
       sendGet(server)
     })
 
-    test('should fire when called after finish', function (done) {
-      var server = http.createServer(function (req, res) {
+    test('should fire when called after finish', (done) => {
+      var server = http.createServer((req, res) => {
         onFinished(res, () => {
           onFinished(res, done)
         })
@@ -44,9 +44,10 @@ describe('onFinished(res, listener)', () => {
   })
 
   describe('when using keep-alive', () => {
-    test('should fire for each response', function (done) {
-      var called = false
-      var server = http.createServer(function (req, res) {
+    test('should fire for each response', (done) => {
+      let socket
+      let called = false
+      let server = http.createServer((req, res) => {
         onFinished(res, () => {
           if (called) {
             socket.end()
@@ -54,16 +55,11 @@ describe('onFinished(res, listener)', () => {
             done(called !== req ? null : new Error('fired twice on same req'))
             return
           }
-
           called = req
-
           writeRequest(socket)
         })
-
         res.end()
       })
-      var socket
-
       server.listen(() => {
         socket = net.connect(this.address().port, () => {
           writeRequest(this)
@@ -73,13 +69,12 @@ describe('onFinished(res, listener)', () => {
   })
 
   describe('when requests pipelined', () => {
-    test('should fire for each request', function (done) {
-      var count = 0
-      var responses = []
-      var server = http.createServer(function (req, res) {
+    test('should fire for each request', (done) => {
+      let count = 0
+      const responses = []
+      const server = http.createServer((req, res) => {
         responses.push(res)
-
-        onFinished(res, function (err) {
+        onFinished(res, (err) => {
           assert.ifError(err)
           assert.strictEqual(responses[0], res)
           responses.shift()
@@ -131,9 +126,9 @@ describe('onFinished(res, listener)', () => {
   })
 
   describe('when response errors', () => {
-    test('should fire with error', function (done) {
-      var server = http.createServer(function (req, res) {
-        onFinished(res, function (err) {
+    test('should fire with error', (done) => {
+      var server = http.createServer((req, res) => {
+        onFinished(res, (err) => {
           assert.ok(err)
           server.close(done)
         })
@@ -150,9 +145,9 @@ describe('onFinished(res, listener)', () => {
       })
     })
 
-    test('should include the response object', function (done) {
-      var server = http.createServer(function (req, res) {
-        onFinished(res, function (err, msg) {
+    test('should include the response object', (done) => {
+      var server = http.createServer((req, res) => {
+        onFinished(res, (err, msg) => {
           assert.ok(err)
           assert.strictEqual(msg, res)
           server.close(done)
@@ -172,9 +167,9 @@ describe('onFinished(res, listener)', () => {
   })
 
   describe('when the response aborts', () => {
-    test('should execute the callback', function (done) {
+    test('should execute the callback', (done) => {
       var client
-      var server = http.createServer(function (req, res) {
+      var server = http.createServer((req, res) => {
         onFinished(res, close(server, done))
         setTimeout(client.abort.bind(client), 0)
       })
@@ -187,8 +182,8 @@ describe('onFinished(res, listener)', () => {
   })
 
   describe('when calling many times on same response', () => {
-    test('should not print warnings', function (done) {
-      var server = http.createServer(function (req, res) {
+    test('should not print warnings', (done) => {
+      var server = http.createServer((req, res) => {
         var stderr = captureStderr(() => {
           for (var i = 0; i < 400; i++) {
             onFinished(res, noop)
@@ -202,7 +197,7 @@ describe('onFinished(res, listener)', () => {
 
       server.listen(() => {
         var port = this.address().port
-        http.get('http://127.0.0.1:' + port, function (res) {
+        http.get('http://127.0.0.1:' + port, (res) => {
           res.resume()
           res.on('end', server.close.bind(server))
         })
@@ -216,7 +211,7 @@ describe('isFinished(res)', () => {
     assert.strictEqual(onFinished.isFinished({}), undefined)
   })
 
-  test('should be false before response finishes', function (done) {
+  test('should be false before response finishes', (done) => {
     var server = http.createServer(function (req, res) {
       assert.ok(!onFinished.isFinished(res))
       res.end()
@@ -1056,9 +1051,9 @@ function close (server, callback) {
 function noop () {}
 
 function sendGet (server) {
-  server.listen(function onListening () {
-    var port = this.address().port
-    http.get('http://127.0.0.1:' + port, function onResponse (res) {
+  server.listen(() => {
+    const port = this.address().port
+    http.get(`http://127.0.0.1:${port}`, (res) => {
       res.resume()
       res.on('end', server.close.bind(server))
     })
@@ -1069,10 +1064,8 @@ function writeRequest (socket, chunked) {
   socket.write('GET / HTTP/1.1\r\n')
   socket.write('Host: localhost\r\n')
   socket.write('Connection: keep-alive\r\n')
-
   if (chunked) {
     socket.write('Transfer-Encoding: chunked\r\n')
   }
-
   socket.write('\r\n')
 }
