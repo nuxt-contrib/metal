@@ -4,22 +4,21 @@ import net from 'net'
 import { onFinished } from '../../src/finished'
 
 describe('onFinished(res, listener)', () => {
-  test('should invoke listener given an unknown object', function (done) {
+  test('should invoke listener given an unknown object', (done) => {
     onFinished({}, done)
   })
 
   describe('when the response finishes', () => {
     test('should fire the callback', (done) => {
-      const server = http.createServer(function (req, res) {
+      const server = http.createServer((req, res) => {
         onFinished(res, done)
         setTimeout(res.end.bind(res), 0)
       })
-
       sendGet(server)
     })
 
-    test('should include the response object', function (done) {
-      const server = http.createServer(function (req, res) {
+    test('should include the response object', (done) => {
+      const server = http.createServer((req, res) => {
         onFinished(res, (err, msg) => {
           assert.ok(!err)
           assert.strictEqual(msg, res)
