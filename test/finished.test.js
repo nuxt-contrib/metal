@@ -31,9 +31,7 @@ describe('onFinished(res, listener)', () => {
 
     test('should fire when called after finish', (done) => {
       const server = http.createServer((req, res) => {
-        onFinished(res, () => {
-          onFinished(res, done)
-        })
+        onFinished(res, () => onFinished(res, done))
         setTimeout(res.end.bind(res), 0)
       })
       sendGet(server)
@@ -57,8 +55,8 @@ describe('onFinished(res, listener)', () => {
         })
         res.end()
       })
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
       })
@@ -96,12 +94,11 @@ describe('onFinished(res, listener)', () => {
         }
         req.resume()
       })
-      server.listen(() => {
-        var data = ''
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        let data = ''
+        socket = net.connect(this.address().port, function () {
           writeRequest(this)
         })
-
         socket.on('data', (chunk) => {
           data += chunk.toString('binary')
         })
@@ -116,39 +113,35 @@ describe('onFinished(res, listener)', () => {
 
   describe('when response errors', () => {
     test('should fire with error', (done) => {
+      let socket
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ok(err)
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
     })
 
     test('should include the response object', (done) => {
+      let socket
       const server = http.createServer((req, res) => {
         onFinished(res, (err, msg) => {
           assert.ok(err)
           assert.strictEqual(msg, res)
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
@@ -157,14 +150,14 @@ describe('onFinished(res, listener)', () => {
 
   describe('when the response aborts', () => {
     test('should execute the callback', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         onFinished(res, close(server, done))
         setTimeout(client.abort.bind(client), 0)
       })
-      server.listen(() => {
-        var port = this.address().port
-        client = http.get('http://127.0.0.1:' + port)
+      server.listen(function () {
+        const port = this.address().port
+        client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
     })
@@ -173,20 +166,18 @@ describe('onFinished(res, listener)', () => {
   describe('when calling many times on same response', () => {
     test('should not print warnings', (done) => {
       const server = http.createServer((req, res) => {
-        var stderr = captureStderr(() => {
-          for (var i = 0; i < 400; i++) {
+        const stderr = captureStderr(() => {
+          for (let i = 0; i < 400; i++) {
             onFinished(res, noop)
           }
         })
-
         onFinished(res, done)
         assert.strictEqual(stderr, '')
         res.end()
       })
-
-      server.listen(() => {
-        var port = this.address().port
-        http.get('http://127.0.0.1:' + port, (res) => {
+      server.listen(function () {
+        let port = this.address().port
+        http.get(`http://127.0.0.1:${port}`, (res) => {
           res.resume()
           res.on('end', server.close.bind(server))
         })
@@ -197,7 +188,7 @@ describe('onFinished(res, listener)', () => {
 
 describe('isFinished(res)', () => {
   test('should return undefined for unknown object', () => {
-    assert.strictEqual(onFinished.isFinished({}), undefined)
+    expect(onFinished.isFinished({}).toBeUndefined()
   })
 
   test('should be false before response finishes', (done) => {
@@ -206,7 +197,6 @@ describe('isFinished(res)', () => {
       res.end()
       done()
     })
-
     sendGet(server)
   })
 
@@ -217,46 +207,37 @@ describe('isFinished(res)', () => {
         assert.ok(onFinished.isFinished(res))
         done()
       })
-
       res.end()
     })
-
     sendGet(server)
   })
 
   describe('when requests pipelined', () => {
     test('should have correct state when socket shared', (done) => {
-      var count = 0
-      var responses = []
+      let socket
+      let count = 0
+      const responses = []
       const server = http.createServer((req, res) => {
         responses.push(res)
-
         onFinished(req, (err) => {
           assert.ifError(err)
-
           if (++count !== 2) {
             return
           }
-
           assert.ok(!onFinished.isFinished(responses[0]))
           assert.ok(!onFinished.isFinished(responses[1]))
-
           responses[0].end()
           responses[1].end()
           socket.end()
           server.close(done)
         })
-
         if (responses.length === 1) {
           // second request
           writeRequest(socket)
         }
-
         req.resume()
       })
-      var socket
-
-      server.listen(() => {
+      server.listen(function () {
         socket = net.connect(this.address().port, () => {
           writeRequest(this)
         })
@@ -335,7 +316,7 @@ describe('isFinished(res)', () => {
       })
       server.listen(() => {
         var port = this.address().port
-        client = http.get('http://127.0.0.1:' + port)
+        client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
     })
@@ -509,7 +490,7 @@ describe('onFinished(req, listener)', () => {
       })
       server.listen(() => {
         var port = this.address().port
-        client = http.get('http://127.0.0.1:' + port)
+        client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
     })
@@ -531,7 +512,7 @@ describe('onFinished(req, listener)', () => {
 
       server.listen(() => {
         var port = this.address().port
-        http.get('http://127.0.0.1:' + port, (res) => {
+        http.get(`http://127.0.0.1:${port}`, (res) => {
           res.resume()
           res.on('end', server.close.bind(server))
         })
@@ -821,7 +802,7 @@ describe('isFinished(req)', () => {
       })
       server.listen(() => {
         var port = this.address().port
-        client = http.get('http://127.0.0.1:' + port)
+        client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
     })
@@ -1042,7 +1023,7 @@ function noop () {}
 function sendGet (server) {
   server.listen(function onListening () {
     var port = this.address().port
-    http.get('http://127.0.0.1:' + port, function onResponse (res) {
+    http.get(`http://127.0.0.1:${port}`, function onResponse (res) {
       res.resume()
       res.on('end', server.close.bind(server))
     })
