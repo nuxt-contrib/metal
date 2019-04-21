@@ -89,28 +89,22 @@ describe('first', () => {
       assert.deepEqual(args, [1, 2, 3])
       done()
     })
-
     ee2.emit('b', 1, 2, 3)
   })
 
   test('should not emit after thunk.cancel()', function (done) {
-    var thunk = first([
+    const thunk = listenFirst([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
       [ee3, 'a', 'b', 'c']
     ])
-    thunk(function () {
-      assert.ok(false)
-    })
-
+    thunk(() => assert.ok(false))
     thunk.cancel()
-
     ee2.emit('b', 1, 2, 3)
-
     setTimeout(done, 10)
   })
 
-  it('should cleanup after thunk.cancel()', function (done) {
+  test('should cleanup after thunk.cancel()', function (done) {
     var thunk = first([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
