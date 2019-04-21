@@ -1,81 +1,81 @@
 
-import metal from '../../src/index'
 import http from 'http'
+import Metal from '../../src/index'
 import rawrequest from './support/rawagent'
 
-describe('app.use()', () => {
-  let app
+let app
 
+describe('app.use()', () => {
   beforeEach(() => {
-    app = connect()
+    app = Metal.createServer()
   })
 
-  it('should not obscure FQDNs', function(done){
+  test('should not obscure FQDNs', (done) => {
     app.use(function(req, res){
-      res.end(req.url);
-    });
+      res.end(req.url)
+    })
 
     rawrequest(app)
     .get('http://example.com/foo')
-    .expect(200, 'http://example.com/foo', done);
-  });
+    .expect(200, 'http://example.com/foo', done)
+  })
 
   describe('with a connect app', function(){
-    it('should ignore FQDN in search', function (done) {
+    test('should ignore FQDN in search', function (done) {
       app.use('/proxy', function (req, res) {
-        res.end(req.url);
-      });
+        res.end(req.url)
+      })
 
       rawrequest(app)
       .get('/proxy?url=http://example.com/blog/post/1')
-      .expect(200, '/?url=http://example.com/blog/post/1', done);
-    });
+      .expect(200, '/?url=http://example.com/blog/post/1', done)
+    })
 
-    it('should ignore FQDN in path', function (done) {
+    test('should ignore FQDN in path', function (done) {
       app.use('/proxy', function (req, res) {
-        res.end(req.url);
-      });
+        res.end(req.url)
+      })
 
       rawrequest(app)
       .get('/proxy/http://example.com/blog/post/1')
-      .expect(200, '/http://example.com/blog/post/1', done);
-    });
+      .expect(200, '/http://example.com/blog/post/1', done)
+    })
 
-    it('should adjust FQDN req.url', function(done){
+    test('should adjust FQDN req.url', (done) => {
       app.use('/blog', function(req, res){
-        res.end(req.url);
-      });
+        res.end(req.url)
+      })
 
       rawrequest(app)
       .get('http://example.com/blog/post/1')
-      .expect(200, 'http://example.com/post/1', done);
-    });
+      .expect(200, 'http://example.com/post/1', done)
+    })
 
-    it('should adjust FQDN req.url with multiple handlers', function(done){
+    test('should adjust FQDN req.url with multiple handlers', (done) => {
       app.use(function(req,res,next) {
-        next();
-      });
+        next()
+      })
 
       app.use('/blog', function(req, res){
-        res.end(req.url);
-      });
+        res.end(req.url)
+      })
 
       rawrequest(app)
       .get('http://example.com/blog/post/1')
-      .expect(200, 'http://example.com/post/1', done);
-    });
+      .expect(200, 'http://example.com/post/1', done)
+    })
 
-    it('should adjust FQDN req.url with multiple routed handlers', function(done) {
+    test('should adjust FQDN req.url with multiple routed handlers', function(done) {
       app.use('/blog', function(req,res,next) {
-        next();
-      });
+        next()
+      })
       app.use('/blog', function(req, res) {
-        res.end(req.url);
-      });
+        res.end(req.url)
+      })
 
       rawrequest(app)
       .get('http://example.com/blog/post/1')
-      .expect(200, 'http://example.com/post/1', done);
-    });
-  });
-});
+      .expect(200, 'http://example.com/post/1', done)
+    })
+  })
+})
