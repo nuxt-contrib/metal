@@ -232,7 +232,7 @@ describe('handler(req, res)', () => {
     })
 
     test('should fallback to generic pathname without URL', (done) => {
-      const server = createServer(function (req, res, next) {
+      const server = createServer((req, res, next) => {
         req.url = undefined
         next()
       })
@@ -243,7 +243,7 @@ describe('handler(req, res)', () => {
     })
 
     test('should include original pathname', (done) => {
-      const server = createServer(function (req, res, next) {
+      const server = createServer((req, res, next) => {
         cons tparts = req.url.split('/')
         req.originalUrl = req.url
         req.url = `/${parts.slice(2).join('/')}`
@@ -353,15 +353,15 @@ describe('handler(req, res)', () => {
       })
 
       test('should not hang/error when actively piped', (done) => {
-        var buf = Buffer.alloc(1024 * 16, '.')
-        const server = createServer(function (req, res, next) {
+        const buf = Buffer.alloc(1024 * 16, '.')
+        const server = createServer((req, res, next) => {
           req.pipe(stream)
           process.nextTick(() => {
             next(new Error('boom!'))
           })
         })
-        var stream = createSlowWriteStream()
-        var test = request(server).post('/foo')
+        const stream = createSlowWriteStream()
+        const test = request(server).post('/foo')
         test.write(buf)
         test.write(buf)
         test.write(buf)
@@ -369,15 +369,15 @@ describe('handler(req, res)', () => {
       })
 
       test('should not hang/error when read', (done) => {
-        var buf = Buffer.alloc(1024 * 16, '.')
-        const server = createServer(function (req, res, next) {
+        const buf = Buffer.alloc(1024 * 16, '.')
+        const server = createServer((req, res, next) => {
           // read off the request
           req.once('end', () => {
             next(new Error('boom!'))
           })
           req.resume()
         })
-        var test = request(server).post('/foo')
+        const test = request(server).post('/foo')
         test.write(buf)
         test.write(buf)
         test.write(buf)
@@ -388,11 +388,10 @@ describe('handler(req, res)', () => {
     describe('when res.statusCode set', () => {
       test('should keep when >= 400', (done) => {
         const server = http.createServer((req, res) => {
-          var done = handler(req, res)
+          const done = handler(req, res)
           res.statusCode = 503
           done(new Error('oops'))
         })
-
         request(server)
           .get('/foo')
           .expect(503, done)
@@ -464,7 +463,7 @@ describe('handler(req, res)', () => {
 
     test('should terminate on error', (done) => {
       const server = http.createServer((req, res) => {
-        var done = handler(req, res)
+        const done = handler(req, res)
         res.statusCode = 301
         res.write('0')
         process.nextTick(() => {

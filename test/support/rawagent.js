@@ -9,39 +9,34 @@ function createRawAgent (app) {
   return new RawAgent(app)
 }
 
-function RawAgent (app) {
-  this.app = app
-
-  this._open = 0
-  this._port = null
-  this._server = null
-}
-
-RawAgent.prototype.get = function get (path) {
-  return new RawRequest(this, 'GET', path)
-}
-
-RawAgent.prototype._close = function _close (cb) {
-  if (--this._open) {
-    return process.nextTick(cb)
+class RawAgent {
+  constructor(app) {
+    this.app = app
+    this._open = 0
+    this._port = null
+    this._server = null
   }
-
-  this._server.close(cb)
+  get(path) {
+    return new RawRequest(this, 'GET', path)
+  }
+  _close(cb) {
+    if (--this._open) {
+      return process.nextTick(cb)
+    }
+    this._server.close(cb)
+  }
 }
 
 RawAgent.prototype._start = function _start (cb) {
   this._open++
-
   if (this._port) {
     return process.nextTick(cb)
   }
-
   if (!this._server) {
     this._server = http.createServer(this.app).listen()
   }
-
-  var agent = this
-  this._server.on('listening', function onListening () {
+  const agent = this
+  this._server.on('listening', function () {
     agent._port = this.address().port
     cb()
   })
