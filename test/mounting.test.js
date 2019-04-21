@@ -141,7 +141,7 @@ describe('with a connect app', () => {
       .expect(200, '/blog/post/1', done)
   })
 
-  it('should adjust req.url', function(done){
+  test('should adjust req.url', function(done){
     app.use('/blog', (req, res) => {
       res.end(req.url)
     })
@@ -151,7 +151,7 @@ describe('with a connect app', () => {
       .expect(200, '/post/1', done)
   })
 
-  it('should strip trailing slash', function(done){
+  test('should strip trailing slash', function(done){
     const blog = Metal.createServer()
 
     blog.use((req, res) => {
@@ -166,7 +166,7 @@ describe('with a connect app', () => {
     .expect('blog', done)
   })
 
-  it('should set .route', function(){
+  test('should set .route', function(){
     const blog = Metal.createServer()
     var admin = Metal.createServer()
     app.use('/blog', blog)
@@ -176,7 +176,7 @@ describe('with a connect app', () => {
     expect(admin.route).toBe('/admin')
   })
 
-  it('should not add trailing slash to req.url', function(done) {
+  test('should not add trailing slash to req.url', function(done) {
     app.use('/admin', function(req, res, next) {
       next()
     })
@@ -192,7 +192,7 @@ describe('with a connect app', () => {
 })
 
 describe('with a node app', function(){
-  it('should mount', function(done){
+  test('should mount', function(done){
     const blog = http.createServer((req, res) => {
       expect(req.url).toBe('/')
       res.end('blog')
@@ -207,7 +207,7 @@ describe('with a node app', function(){
 })
 
 describe('error handling', function(){
-  it('should send errors to airty 4 fns', function(done){
+  test('should send errors to airty 4 fns', function(done){
     app.use(function(req, res, next){
       next(new Error('msg'))
     })
@@ -220,7 +220,7 @@ describe('error handling', function(){
     .expect('got error msg', done)
   })
 
-  it('should skip to non-error middleware', function(done){
+  test('should skip to non-error middleware', function(done){
     var invoked = false
 
     app.use(function(req, res, next){
@@ -239,7 +239,7 @@ describe('error handling', function(){
     .expect(200, 'msg', done)
   })
 
-  it('should start at error middleware declared after error', function(done){
+  test('should start at error middleware declared after error', function(done){
     var invoked = false
 
     app.use(function(err, req, res, next){
@@ -257,7 +257,7 @@ describe('error handling', function(){
     .expect(200, 'pass: boom!', done)
   })
 
-  it('should stack error fns', function(done){
+  test('should stack error fns', function(done){
     app.use(function(req, res, next){
       next(new Error('msg'))
     })
@@ -275,7 +275,7 @@ describe('error handling', function(){
     .expect(200, 'got error msg', done)
   })
 
-  it('should invoke error stack even when headers sent', function(done){
+  test('should invoke error stack even when headers sent', function(done){
     app.use(function(req, res, next){
       res.end('0')
       next(new Error('msg'))

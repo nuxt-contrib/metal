@@ -1,49 +1,37 @@
 
-var assert = require('assert');
-var connect = require('..');
-var http = require('http');
-var rawrequest = require('./support/rawagent')
-var request = require('supertest');
+import http from 'http'
+import Metal from '../../src/index'
+import rawrequest from './support/rawagent'
+import request from 'supertest'
 
-
-var assert = require('assert')
-var connect = require('..');
-var request = require('supertest');
-
-describe('app.listen()', function(){
-  it('should wrap in an http.Server', function(done){
-    var app = connect();
-
-    app.use(function(req, res){
-      res.end();
-    });
-
-    var server = app.listen(0, function () {
-      assert.ok(server)
+describe('app.listen()', () => {
+  test('should wrap in an http.Server', (done) => {
+    const app = Metal.createServer()
+    app.use((_, res) => res.end())
+    const server = app.listen(0, () => {
+      expect(server).toBeTruthy()
       request(server)
-      .get('/')
-      .expect(200, function (err) {
-        server.close(function () {
-          done(err)
+        .get('/')
+        .expect(200, (err) => {
+          server.close(() => done(err))
         })
-      })
-    });
-  });
-});
+    })
+  })
+})
 
-describe('app', function(){
-  var app;
+let app
 
-  beforeEach(function(){
-    app = connect();
-  });
+describe('app', () => {
+  beforeEach(() => {
+    app = Metal.createServer()
+  })
 
-  it('should inherit from event emitter', function(done){
+  test('should inherit from event emitter', function(done){
     app.on('foo', done);
     app.emit('foo');
   });
 
-  it('should work in http.createServer', function(done){
+  test('should work in http.createServer', function(done){
     var app = connect();
 
     app.use(function (req, res) {
@@ -57,7 +45,7 @@ describe('app', function(){
     .expect(200, 'hello, world!', done);
   })
 
-  it('should be a callable function', function(done){
+  test('should be a callable function', function(done){
     var app = connect();
 
     app.use(function (req, res) {
@@ -76,7 +64,7 @@ describe('app', function(){
     .expect(200, 'oh, hello, world!', done);
   })
 
-  it('should invoke callback if request not handled', function(done){
+  test('should invoke callback if request not handled', function(done){
     var app = connect();
 
     app.use('/foo', function (req, res) {
@@ -97,7 +85,7 @@ describe('app', function(){
     .expect(200, 'oh, no!', done);
   })
 
-  it('should invoke callback on error', function(done){
+  test('should invoke callback on error', function(done){
     var app = connect();
 
     app.use(function (req, res) {
@@ -118,7 +106,7 @@ describe('app', function(){
     .expect(200, 'oh, boom!', done);
   })
 
-  it('should work as middleware', function(done){
+  test('should work as middleware', function(done){
     // custom server handler array
     var handlers = [connect(), function(req, res, next){
       res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -143,7 +131,7 @@ describe('app', function(){
     .expect(200, 'Ok', done);
   });
 
-  it('should escape the 500 response body', function(done){
+  test('should escape the 500 response body', function(done){
     app.use(function(req, res, next){
       next(new Error('error!'));
     });
@@ -155,7 +143,7 @@ describe('app', function(){
   })
 
   describe('404 handler', function(){
-    it('should escape the 404 response body', function(done){
+    test('should escape the 404 response body', function(done){
       rawrequest(app)
       .get('/foo/<script>stuff\'n</script>')
       .expect(404, />Cannot GET \/foo\/%3Cscript%3Estuff&#39;n%3C\/script%3E</, done)
@@ -187,7 +175,7 @@ describe('app', function(){
   })
 
   describe('error handler', function(){
-    it('should have escaped response body', function(done){
+    test('should have escaped response body', function(done){
       var app = connect();
 
       app.use(function(req, res, next){
