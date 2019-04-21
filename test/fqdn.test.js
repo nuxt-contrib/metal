@@ -11,71 +11,48 @@ describe('app.use()', () => {
   })
 
   test('should not obscure FQDNs', (done) => {
-    app.use(function(req, res){
-      res.end(req.url)
-    })
-
+    app.use((_, res) => res.end(req.url))
     rawrequest(app)
-    .get('http://example.com/foo')
-    .expect(200, 'http://example.com/foo', done)
+      .get('http://example.com/foo')
+      .expect(200, 'http://example.com/foo', done)
   })
 
   describe('with a connect app', function(){
-    test('should ignore FQDN in search', function (done) {
-      app.use('/proxy', function (req, res) {
-        res.end(req.url)
-      })
-
+    test('should ignore FQDN in search', (done) => {
+      app.use('/proxy', (_, res) => res.end(req.url))
       rawrequest(app)
-      .get('/proxy?url=http://example.com/blog/post/1')
-      .expect(200, '/?url=http://example.com/blog/post/1', done)
+        .get('/proxy?url=http://example.com/blog/post/1')
+        .expect(200, '/?url=http://example.com/blog/post/1', done)
     })
 
-    test('should ignore FQDN in path', function (done) {
-      app.use('/proxy', function (req, res) {
-        res.end(req.url)
-      })
-
+    test('should ignore FQDN in path', (done) => {
+      app.use('/proxy', (_, res) => res.end(req.url))
       rawrequest(app)
-      .get('/proxy/http://example.com/blog/post/1')
-      .expect(200, '/http://example.com/blog/post/1', done)
+        .get('/proxy/http://example.com/blog/post/1')
+        .expect(200, '/http://example.com/blog/post/1', done)
     })
 
     test('should adjust FQDN req.url', (done) => {
-      app.use('/blog', function(req, res){
-        res.end(req.url)
-      })
-
+      app.use('/blog', (req, res) => res.end(req.url))
       rawrequest(app)
-      .get('http://example.com/blog/post/1')
-      .expect(200, 'http://example.com/post/1', done)
+        .get('http://example.com/blog/post/1')
+        .expect(200, 'http://example.com/post/1', done)
     })
 
     test('should adjust FQDN req.url with multiple handlers', (done) => {
-      app.use(function(req,res,next) {
-        next()
-      })
-
-      app.use('/blog', function(req, res){
-        res.end(req.url)
-      })
-
+      app.use((req, res, next) => next())
+      app.use('/blog', (req, res) => res.end(req.url))
       rawrequest(app)
-      .get('http://example.com/blog/post/1')
-      .expect(200, 'http://example.com/post/1', done)
+        .get('http://example.com/blog/post/1')
+        .expect(200, 'http://example.com/post/1', done)
     })
 
-    test('should adjust FQDN req.url with multiple routed handlers', function(done) {
-      app.use('/blog', function(req,res,next) {
-        next()
-      })
-      app.use('/blog', function(req, res) {
-        res.end(req.url)
-      })
-
+    test('should adjust FQDN req.url with multiple routed handlers', (done) => {
+      app.use('/blog', (req, res, next) => next())
+      app.use('/blog', (req, res) => res.end(req.url))
       rawrequest(app)
-      .get('http://example.com/blog/post/1')
-      .expect(200, 'http://example.com/post/1', done)
+        .get('http://example.com/blog/post/1')
+        .expect(200, 'http://example.com/post/1', done)
     })
   })
 })
