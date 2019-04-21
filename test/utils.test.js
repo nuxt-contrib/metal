@@ -23,25 +23,24 @@ describe('first', () => {
     expect(first.bind(null, {})).toThrow()
   })
 
-  it('should require array of arrays argument', function () {
-    assert.throws(first.bind(null, [0]))
-    assert.throws(first.bind(null, ['string']))
-    assert.throws(first.bind(null, [[ee1], 'string']))
+  test('should require array of arrays argument', () => {
+    expect(first.bind(null, [0])).toThrow()
+    expect(first.bind(null, ['string'])).toThrow()
+    expect(first.bind(null, [[ee1], 'string'])).toThrow()
   })
 
-  it('should emit the first event', function (done) {
-    first([
+  test('should emit the first event', (done) => {
+    listenOnce([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
       [ee3, 'a', 'b', 'c']
-    ], function (err, ee, event, args) {
+    ], (err, ee, event, args) => {
       assert.ifError(err)
       assert.equal(ee, ee2)
       assert.equal(event, 'b')
       assert.deepEqual(args, [1, 2, 3])
       done()
     })
-
     ee2.emit('b', 1, 2, 3)
   })
 
