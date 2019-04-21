@@ -1,7 +1,7 @@
 
 import http from 'http'
 import Metal from '../../src/index'
-import request from 'supertest'
+import { request } from './support/utils'
 
 let app
 
@@ -11,55 +11,42 @@ describe('app.use()', () => {
   })
 
   test('should match all paths with "/"', (done) => {
-    app.use('/', (req, res) => {
-      res.end(req.url)
-    })
+    app.use('/', (req, res) => res.end(req.url))
     request(app)
       .get('/blog')
       .expect(200, '/blog', done)
   })
 
   test('should match full path', (done) => {
-    app.use('/blog', (req, res) => {
-      res.end(req.url)
-    })
+    app.use('/blog', (req, res) => res.end(req.url))
     request(app)
       .get('/blog')
       .expect(200, '/', done)
   })
 
   test('should match left-side of path', (done) => {
-    app.use('/blog', (req, res) => {
-      res.end(req.url)
-    })
-
+    app.use('/blog', (req, res) => res.end(req.url))
     request(app)
       .get('/blog/article/1')
       .expect(200, '/article/1', done)
   })
 
   test('should match up to dot', (done) => {
-    app.use('/blog', (req, res) => {
-      res.end(req.url)
-    })
+    app.use('/blog', (req, res) => res.end(req.url))
     request(app)
       .get('/blog.json')
       .expect(200, done)
   })
 
   test('should not match shorter path', (done) => {
-    app.use('/blog-o-rama', (req, res) => {
-      res.end(req.url)
-    })
+    app.use('/blog-o-rama', (req, res) => res.end(req.url))
     request(app)
       .get('/blog')
       .expect(404, done)
   })
 
   test('should not end match in middle of component', (done) => {
-    app.use('/blog', (req, res) => {
-      res.end(req.url)
-    })
+    app.use('/blog', (req, res) => res.end(req.url))
     request(app)
       .get('/blog-o-rama/article/1')
       .expect(404, done)
@@ -82,10 +69,9 @@ describe('app.use()', () => {
       res.end('blog')
     })
     app.use('/BLog', blog)
-
     request(app)
-    .get('/blog')
-    .expect('blog', done)
+      .get('/blog')
+      .expect('blog', done)
   })
 
   test('should be case insensitive (mixed-case route, mixed-case request)', (done) => {
@@ -153,22 +139,19 @@ describe('with a connect app', () => {
 
   test('should strip trailing slash', function(done){
     const blog = Metal.createServer()
-
     blog.use((req, res) => {
       expect(req.url).toBe('/')
       res.end('blog')
     })
-
     app.use('/blog/', blog)
-
     request(app)
-    .get('/blog')
-    .expect('blog', done)
+      .get('/blog')
+      .expect('blog', done)
   })
 
   test('should set .route', function(){
     const blog = Metal.createServer()
-    var admin = Metal.createServer()
+    const admin = Metal.createServer()
     app.use('/blog', blog)
     blog.use('/admin', admin)
     expect(app.route).toBe('/')
@@ -176,33 +159,25 @@ describe('with a connect app', () => {
     expect(admin.route).toBe('/admin')
   })
 
-  test('should not add trailing slash to req.url', function(done) {
-    app.use('/admin', function(req, res, next) {
-      next()
-    })
-
-    app.use(function(req, res, next) {
-      res.end(req.url)
-    })
-
+  test('should not add trailing slash to req.url', (done) => {
+    app.use('/admin', (req, res, next) => next())
+    app.use((req, res, next) => res.end(req.url))
     request(app)
-    .get('/admin')
-    .expect('/admin', done)
+      .get('/admin')
+      .expect('/admin', done)
   })
 })
 
-describe('with a node app', function(){
-  test('should mount', function(done){
+describe('with a node app', () => {
+  test('should mount', (done) => {
     const blog = http.createServer((req, res) => {
       expect(req.url).toBe('/')
       res.end('blog')
     })
-
     app.use('/blog', blog)
-
     request(app)
-    .get('/blog')
-    .expect('blog', done)
+      .get('/blog')
+      .expect('blog', done)
   })
 })
 
