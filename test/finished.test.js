@@ -479,19 +479,17 @@ describe('onFinished(req, listener)', () => {
   describe('when calling many times on same request', () => {
     test('should not print warnings', (done) => {
       const server = http.createServer((req, res) => {
-        var stderr = captureStderr(() => {
+        let stderr = captureStderr(() => {
           for (var i = 0; i < 400; i++) {
             onFinished(req, noop)
           }
         })
-
         onFinished(req, done)
         assert.strictEqual(stderr, '')
         res.end()
       })
-
       server.listen(() => {
-        var port = this.address().port
+        let port = this.address().port
         http.get(`http://127.0.0.1:${port}`, (res) => {
           res.resume()
           res.on('end', server.close.bind(server))
@@ -502,31 +500,27 @@ describe('onFinished(req, listener)', () => {
 
   describe('when CONNECT method', () => {
     test('should fire when request finishes', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         res.statusCode = 405
         res.end()
       })
       server.on('connect', (req, socket, bodyHead) => {
-        var data = [bodyHead]
-
+        let data = [bodyHead]
         onFinished(req, (err) => {
           assert.ifError(err)
           assert.strictEqual(Buffer.concat(data).toString(), 'knock, knock')
-
           socket.on('data', (chunk) => {
             assert.strictEqual(chunk.toString(), 'ping')
             socket.end('pong')
           })
           socket.write('HTTP/1.1 200 OK\r\n\r\n')
         })
-
         req.on('data', (chunk) => {
           data.push(chunk)
         })
       })
-
-      server.listen(() => {
+      server.listen(function () {
         client = http.request({
           hostname: '127.0.0.1',
           method: 'CONNECT',
@@ -546,33 +540,27 @@ describe('onFinished(req, listener)', () => {
     })
 
     test('should fire when called after finish', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         res.statusCode = 405
         res.end()
       })
       server.on('connect', (req, socket, bodyHead) => {
-        var data = [bodyHead]
-
+        let data = [bodyHead]
         onFinished(req, (err) => {
           assert.ifError(err)
           assert.strictEqual(Buffer.concat(data).toString(), 'knock, knock')
           socket.write('HTTP/1.1 200 OK\r\n\r\n')
         })
-
         socket.on('data', (chunk) => {
           assert.strictEqual(chunk.toString(), 'ping')
-          onFinished(req, () => {
-            socket.end('pong')
-          })
+          onFinished(req, () => socket.end('pong'))
         })
-
         req.on('data', (chunk) => {
           data.push(chunk)
         })
       })
-
-      server.listen(() => {
+      server.listen(function () {
         client = http.request({
           hostname: '127.0.0.1',
           method: 'CONNECT',
@@ -594,18 +582,16 @@ describe('onFinished(req, listener)', () => {
 
   describe('when Upgrade request', () => {
     test('should fire when request finishes', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         res.statusCode = 405
         res.end()
       })
       server.on('upgrade', (req, socket, bodyHead) => {
-        var data = [bodyHead]
-
+        let data = [bodyHead]
         onFinished(req, (err) => {
           assert.ifError(err)
           assert.strictEqual(Buffer.concat(data).toString(), 'knock, knock')
-
           socket.on('data', (chunk) => {
             assert.strictEqual(chunk.toString(), 'ping')
             socket.end('pong')
@@ -615,13 +601,11 @@ describe('onFinished(req, listener)', () => {
           socket.write('Upgrade: Raw\r\n')
           socket.write('\r\n')
         })
-
         req.on('data', (chunk) => {
           data.push(chunk)
         })
       })
-
-      server.listen(() => {
+      server.listen(function () {
         client = http.request({
           headers: {
             'Connection': 'Upgrade',
@@ -630,7 +614,6 @@ describe('onFinished(req, listener)', () => {
           hostname: '127.0.0.1',
           port: this.address().port
         })
-
         client.on('upgrade', (res, socket, bodyHead) => {
           socket.write('ping')
           socket.on('data', (chunk) => {
@@ -644,37 +627,29 @@ describe('onFinished(req, listener)', () => {
     })
 
     test('should fire when called after finish', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         res.statusCode = 405
         res.end()
       })
       server.on('upgrade', (req, socket, bodyHead) => {
-        var data = [bodyHead]
-
+        let data = [bodyHead]
         onFinished(req, (err) => {
           assert.ifError(err)
           assert.strictEqual(Buffer.concat(data).toString(), 'knock, knock')
-
           socket.write('HTTP/1.1 101 Switching Protocols\r\n')
           socket.write('Connection: Upgrade\r\n')
           socket.write('Upgrade: Raw\r\n')
           socket.write('\r\n')
         })
-
         socket.on('data', (chunk) => {
           assert.strictEqual(chunk.toString(), 'ping')
-          onFinished(req, () => {
-            socket.end('pong')
-          })
+          onFinished(req, () => socket.end('pong'))
         })
-
-        req.on('data', (chunk) => {
-          data.push(chunk)
-        })
+        req.on('data', (chunk) => data.push(chunk))
       })
 
-      server.listen(() => {
+      server.listen(function () {
         client = http.request({
           headers: {
             'Connection': 'Upgrade',
@@ -683,7 +658,6 @@ describe('onFinished(req, listener)', () => {
           hostname: '127.0.0.1',
           port: this.address().port
         })
-
         client.on('upgrade', (res, socket, bodyHead) => {
           socket.write('ping')
           socket.on('data', (chunk) => {
@@ -700,7 +674,7 @@ describe('onFinished(req, listener)', () => {
 
 describe('isFinished(req)', () => {
   test('should return undefined for unknown object', () => {
-    assert.strictEqual(onFinished.isFinished({}), undefined)
+    expect(onFinished.isFinished({}).toBeUndefined()
   })
 
   test('should be false before request finishes', (done) => {
@@ -710,7 +684,6 @@ describe('isFinished(req)', () => {
       res.end()
       done()
     })
-
     sendGet(server)
   })
 
@@ -721,11 +694,9 @@ describe('isFinished(req)', () => {
         assert.ok(onFinished.isFinished(req))
         done()
       })
-
       req.resume()
       res.end()
     })
-
     sendGet(server)
   })
 
@@ -733,7 +704,6 @@ describe('isFinished(req)', () => {
     test('should be false before request finishes', (done) => {
       const server = http.createServer((req, res) => {
         assert.ok(!onFinished.isFinished(req))
-
         req.pause()
         setTimeout(() => {
           assert.ok(!onFinished.isFinished(req))
@@ -742,25 +712,22 @@ describe('isFinished(req)', () => {
           done()
         }, 10)
       })
-
       sendGet(server)
     })
   })
 
   describe('when request errors', () => {
     test('should return true', (done) => {
+      let socket
       const server = http.createServer((req, res) => {
         onFinished(req, (err) => {
           assert.ok(err)
           assert.ok(onFinished.isFinished(req))
           server.close(done)
         })
-
         socket.on('error', noop)
         socket.write('W')
       })
-      var socket
-
       server.listen(() => {
         socket = net.connect(this.address().port, () => {
           writeRequest(this, true)
@@ -771,7 +738,7 @@ describe('isFinished(req)', () => {
 
   describe('when the request aborts', () => {
     test('should return true', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ifError(err)
@@ -780,8 +747,8 @@ describe('isFinished(req)', () => {
         })
         setTimeout(client.abort.bind(client), 0)
       })
-      server.listen(() => {
-        var port = this.address().port
+      server.listen(function () {
+        let port = this.address().port
         client = http.get(`http://127.0.0.1:${port}`)
         client.on('error', noop)
       })
@@ -790,7 +757,7 @@ describe('isFinished(req)', () => {
 
   describe('when CONNECT method', () => {
     test('should be true immediately', (done) => {
-      var client
+      let client
       const server = http.createServer((req, res) => {
         res.statusCode = 405
         res.end()
