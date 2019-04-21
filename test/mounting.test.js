@@ -3,15 +3,16 @@ import http from 'http'
 import metal from '../../src/index'
 import request from 'supertest'
 
-describe('app.use()', function(){
-  var app;
+let app
 
-  beforeEach(function(){
-    app = connect();
-  });
+describe('app.use()', () => {
 
-  it('should match all paths with "/"', function (done) {
-    app.use('/', function (req, res) {
+  beforeEach(() => {
+    app = connect()
+  })
+
+  test('should match all paths with "/"', (done) => {
+    app.use('/', (req, res) => {
       res.end(req.url);
     });
 
@@ -20,8 +21,8 @@ describe('app.use()', function(){
     .expect(200, '/blog', done);
   });
 
-  it('should match full path', function (done) {
-    app.use('/blog', function (req, res) {
+  test('should match full path', (done) => {
+    app.use('/blog', (req, res) => {
       res.end(req.url);
     });
 
@@ -30,8 +31,8 @@ describe('app.use()', function(){
     .expect(200, '/', done);
   });
 
-  it('should match left-side of path', function (done) {
-    app.use('/blog', function (req, res) {
+  test('should match left-side of path', (done) => {
+    app.use('/blog', (req, res) => {
       res.end(req.url);
     });
 
@@ -40,8 +41,8 @@ describe('app.use()', function(){
     .expect(200, '/article/1', done);
   });
 
-  it('should match up to dot', function (done) {
-    app.use('/blog', function (req, res) {
+  test('should match up to dot', (done) => {
+    app.use('/blog', (req, res) => {
       res.end(req.url)
     })
 
@@ -50,8 +51,8 @@ describe('app.use()', function(){
     .expect(200, done)
   })
 
-  it('should not match shorter path', function (done) {
-    app.use('/blog-o-rama', function (req, res) {
+  test('should not match shorter path', (done) => {
+    app.use('/blog-o-rama', (req, res) => {
       res.end(req.url);
     });
 
@@ -60,8 +61,8 @@ describe('app.use()', function(){
     .expect(404, done);
   });
 
-  it('should not end match in middle of component', function (done) {
-    app.use('/blog', function (req, res) {
+  test('should not end match in middle of component', (done) => {
+    app.use('/blog', (req, res) => {
       res.end(req.url);
     });
 
@@ -70,7 +71,7 @@ describe('app.use()', function(){
     .expect(404, done);
   });
 
-  it('should be case insensitive (lower-case route, mixed-case request)', function(done){
+  test('should be case insensitive (lower-case route, mixed-case request)', function(done){
     var blog = http.createServer(function(req, res){
       assert.equal(req.url, '/');
       res.end('blog');
@@ -83,7 +84,7 @@ describe('app.use()', function(){
     .expect('blog', done);
   });
 
-  it('should be case insensitive (mixed-case route, lower-case request)', function(done){
+  test('should be case insensitive (mixed-case route, lower-case request)', function(done){
     var blog = http.createServer(function(req, res){
       assert.equal(req.url, '/');
       res.end('blog');
