@@ -232,7 +232,7 @@ describe('handler(req, res)', () => {
     })
 
     test('should fallback to generic pathname without URL', (done) => {
-      var server = createServer(function (req, res, next) {
+      const server = createServer(function (req, res, next) {
         req.url = undefined
         next()
       })
@@ -243,13 +243,12 @@ describe('handler(req, res)', () => {
     })
 
     test('should include original pathname', (done) => {
-      var server = createServer(function (req, res, next) {
-        var parts = req.url.split('/')
+      const server = createServer(function (req, res, next) {
+        cons tparts = req.url.split('/')
         req.originalUrl = req.url
-        req.url = '/' + parts.slice(2).join('/')
+        req.url = `/${parts.slice(2).join('/')}`
         next()
       })
-
       request(server)
         .get('/foo/bar')
         .expect(404, /<pre>Cannot GET \/foo\/bar<\/pre>/, done)
@@ -284,9 +283,9 @@ describe('handler(req, res)', () => {
     })
 
     test('should not hang/error if there is a request body', (done) => {
-      var buf = Buffer.alloc(1024 * 16, '.')
-      var server = createServer()
-      var test = request(server).post('/foo')
+      const buf = Buffer.alloc(1024 * 16, '.')
+      const server = createServer()
+      const test = request(server).post('/foo')
       test.write(buf)
       test.write(buf)
       test.write(buf)
@@ -336,21 +335,17 @@ describe('handler(req, res)', () => {
     })
 
     test('should send staus code name when production', (done) => {
-      var err = createError('boom!', {
-        status: 501
-      })
-      request(createServer(err, {
-        env: 'production'
-      }))
+      const err = createError('boom!', { status: 501 })
+      request(createServer(err, { env: 'production' }))
         .get('/foo')
         .expect(501, /<pre>Not Implemented<\/pre>/, done)
     })
 
     describe('when there is a request body', () => {
       test('should not hang/error when unread', (done) => {
-        var buf = Buffer.alloc(1024 * 16, '.')
-        var server = createServer(new Error('boom!'))
-        var test = request(server).post('/foo')
+        const buf = Buffer.alloc(1024 * 16, '.')
+        const server = createServer(new Error('boom!'))
+        const test = request(server).post('/foo')
         test.write(buf)
         test.write(buf)
         test.write(buf)
@@ -359,7 +354,7 @@ describe('handler(req, res)', () => {
 
       test('should not hang/error when actively piped', (done) => {
         var buf = Buffer.alloc(1024 * 16, '.')
-        var server = createServer(function (req, res, next) {
+        const server = createServer(function (req, res, next) {
           req.pipe(stream)
           process.nextTick(() => {
             next(new Error('boom!'))
@@ -375,7 +370,7 @@ describe('handler(req, res)', () => {
 
       test('should not hang/error when read', (done) => {
         var buf = Buffer.alloc(1024 * 16, '.')
-        var server = createServer(function (req, res, next) {
+        const server = createServer(function (req, res, next) {
           // read off the request
           req.once('end', () => {
             next(new Error('boom!'))
@@ -392,7 +387,7 @@ describe('handler(req, res)', () => {
 
     describe('when res.statusCode set', () => {
       test('should keep when >= 400', (done) => {
-        var server = http.createServer((req, res) => {
+        const server = http.createServer((req, res) => {
           var done = handler(req, res)
           res.statusCode = 503
           done(new Error('oops'))
@@ -404,39 +399,33 @@ describe('handler(req, res)', () => {
       })
 
       test('should convert to 500 is not a number', (done) => {
-        var server = http.createServer((req, res) => {
-          var done = handler(req, res)
+        const server = http.createServer((req, res) => {
+          const done = handler(req, res)
           res.statusCode = 'oh no'
           done(new Error('oops'))
         })
-
         request(server)
           .get('/foo')
           .expect(500, done)
       })
 
       test('should override with err.status', (done) => {
-        var server = http.createServer((req, res) => {
-          var done = handler(req, res)
-          var err = createError('oops', {
+        const server = http.createServer((req, res) => {
+          const done = handler(req, res)
+          const err = createError('oops', {
             status: 414,
             statusCode: 503
           })
           done(err)
         })
-
         request(server)
           .get('/foo')
           .expect(414, done)
       })
 
       test('should default body to status message in production', (done) => {
-        var err = createError('boom!', {
-          status: 509
-        })
-        request(createServer(err, {
-          env: 'production'
-        }))
+        const err = createError('boom!', { status: 509 })
+        request(createServer(err, { env: 'production' }))
           .get('/foo')
           .expect(509, /<pre>Bandwidth Limit Exceeded<\/pre>/, done)
       })
@@ -444,12 +433,11 @@ describe('handler(req, res)', () => {
 
     describe('when res.statusCode undefined', () => {
       test('should set to 500', (done) => {
-        var server = http.createServer((req, res) => {
-          var done = handler(req, res)
+        const server = http.createServer((req, res) => {
+          const done = handler(req, res)
           res.statusCode = undefined
           done(new Error('oops'))
         })
-
         request(server)
           .get('/foo')
           .expect(500, done)
@@ -459,8 +447,8 @@ describe('handler(req, res)', () => {
 
   describe('request started', () => {
     test('should not respond', (done) => {
-      var server = http.createServer((req, res) => {
-        var done = handler(req, res)
+      const server = http.createServer((req, res) => {
+        const done = handler(req, res)
         res.statusCode = 301
         res.write('0')
         process.nextTick(() => {
@@ -475,7 +463,7 @@ describe('handler(req, res)', () => {
     })
 
     test('should terminate on error', (done) => {
-      var server = http.createServer((req, res) => {
+      const server = http.createServer((req, res) => {
         var done = handler(req, res)
         res.statusCode = 301
         res.write('0')
