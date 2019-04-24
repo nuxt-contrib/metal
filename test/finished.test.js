@@ -1,4 +1,5 @@
 
+import assert from 'assert'
 import http from 'http'
 import net from 'net'
 import { onFinished } from '../../src/finished'

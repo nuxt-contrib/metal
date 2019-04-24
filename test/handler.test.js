@@ -244,7 +244,7 @@ describe('handler(req, res)', () => {
 
     test('should include original pathname', (done) => {
       const server = createServer((req, res, next) => {
-        cons tparts = req.url.split('/')
+        const parts = req.url.split('/')
         req.originalUrl = req.url
         req.url = `/${parts.slice(2).join('/')}`
         next()
