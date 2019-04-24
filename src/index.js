@@ -55,8 +55,8 @@ export default class Metal extends EventEmitter {
     let removed = ''
     let slashAdded = false
     let stack = this.stack
-    let done = out || handler(req, res, { env, onerror })
     req.originalUrl = req.originalUrl || req.url
+    let done = out || handler(req, res, { env, onerror })
     async function next (err) {
       if (slashAdded) {
         req.url = req.url.substr(1)

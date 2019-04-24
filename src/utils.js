@@ -178,9 +178,9 @@ export function getErrorMessage (err, status, env) {
 
 // Get resource name for the request.
 export function getResourceName (req) {
-  try {
-    return getURLPathname(req.originalUrl)
-  } catch (e) {
-    return 'resource'
+  let pn
+  if (pn = getURLPathname(req.originalUrl || req.url)) {
+    return pn
   }
+  return 'resource'
 }

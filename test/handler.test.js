@@ -217,13 +217,13 @@ describe('handler(req, res)', () => {
     test('should include method and pathname', (done) => {
       request(createServer())
         .get('/foo')
-        .expect(404, '{"error": "Cannot GET /foo"}', done)
+        .expect(404, '{"error":"Cannot GET /foo"}', done)
     })
 
     test('should escape method and pathname characters', (done) => {
       rawrequest(createServer())
         .get('/<la\'me>')
-        .expect(404, '{"error": "Cannot GET /%3Cla&#39;me%3E"}', done)
+        .expect(404, '{"error":"Cannot GET /%3Cla&#39;me%3E"}', done)
     })
 
     test('should encode bad pathname characters', (done) => {
@@ -240,7 +240,7 @@ describe('handler(req, res)', () => {
 
       request(server)
         .get('/foo')
-        .expect(404, '{"error": Cannot GET resource"}', done)
+        .expect(404, '{"error":"Cannot GET resource"}', done)
     })
 
     test('should include original pathname', (done) => {
