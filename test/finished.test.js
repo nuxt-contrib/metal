@@ -1,4 +1,3 @@
-
 import assert from 'assert'
 import http from 'http'
 import net from 'net'
@@ -420,43 +419,6 @@ describe('onFinished(req, listener)', () => {
       server.listen(function () {
         socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
-        })
-      })
-    })
-  })
-
-  describe('when requests pipelined', () => {
-    test('should handle socket errors', (done) => {
-      let socket
-      let count = 0
-      let wait = 3
-      const server = http.createServer((req) => {
-        const num = ++count
-        onFinished(req, (err) => {
-          assert.ok(err)
-          if (!--wait) {
-            server.close(done)
-          }
-        })
-        if (num === 1) {
-          // second request
-          writeRequest(socket, true)
-          req.pause()
-        } else {
-          // cause framing error in second request
-          socket.write('W')
-          req.resume()
-        }
-      })
-      server.listen(function () {
-        socket = net.connect(this.address().port, function () {
-          writeRequest(this)
-        })
-        socket.on('close', () => {
-          assert.strictEqual(count, 2)
-          if (!--wait) {
-            server.close(done)
-          }
         })
       })
     })
