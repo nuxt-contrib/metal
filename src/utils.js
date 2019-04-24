@@ -3,6 +3,10 @@ import statuses from './statuses'
 
 getURLPathname.cache = {}
 
+export function escapeRegExp(str) {
+  return str.replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1')
+}
+
 // Parse the `str` url with fast-path short-cut.
 export function getURLPathname (url) {
   if (!url || url in getURLPathname.cache) {
