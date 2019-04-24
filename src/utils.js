@@ -90,7 +90,7 @@ export function listenFirst (stuff, done) {
     let j = 1
     for (; j < arr.length; j++) {
       let event = arr[j]
-      let fn = (...args) => {
+      let fn = function (...args) {
         callback(event === 'error' ? args[0] : null, this, event, args)
       }
       ee.on(event, fn)
