@@ -35,6 +35,17 @@ All without compromising performance, if not improving it slightly.
 autocannon -c 100 -d 40 -p 10 localhost:3000
 ```
 
+## Changes
+
+```js
+  test('should match full path', (done) => {
+    app.use('/blog', (req, res) => res.end(req.url))
+    request(app)
+      .get('/blog')
+      .expect(200, '/blog', done)
+  })
+````
+
 ## Acknowledgement
 
 This module is largely based on the work of [TJ Holowaychuk][tj], [Douglas 

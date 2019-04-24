@@ -1,7 +1,7 @@
 
 import http from 'http'
 import { EventEmitter } from 'events'
-import { getURLPathname, trimURLPath } from './utils'
+import { getURLPathname, trimURLPath, escapeRegExp } from './utils'
 import handler from './handler'
 
 export default class Metal extends EventEmitter {
@@ -26,11 +26,11 @@ export default class Metal extends EventEmitter {
   }
   use (route, handle) {
     // default route to '/'
-    if (typeof route !== 'string' && !(route instanceof RegExp)) {
+    if (typeof route !== 'string' || route instanceof RegExp) {
       handle = route
       route = '/'
-    } else if (!route instanceof RegExp) {
-      route = new RegExp(route, 'i')
+    } else if (!(route instanceof RegExp)) {
+      route = new RegExp(escapeRegExp(route), 'i')
     }
     // wrap sub-apps
     if (typeof handle.handle === 'function') {
@@ -56,8 +56,10 @@ export default class Metal extends EventEmitter {
         setImmediate(done, err)
         return
       }
-      const path = getURLPathname(req.url) || '/'
-      if (path.match(layer.route)) {
+      const path = req.url
+      const match = path.match(layer.route)
+      if (match) {
+        req.match = match
         return call(layer.handle, layer.route, err, req, res, next)
       } else {
         return next()
