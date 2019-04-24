@@ -16,16 +16,16 @@ describe('first', () => {
   })
 
   test('should require array argument', () => {
-    expect(first.bind()).toThrow()
-    expect(first.bind(null, 'string')).toThrow()
-    expect(first.bind(null, 42)).toThrow()
-    expect(first.bind(null, {})).toThrow()
+    expect(listenFirst.bind()).toThrow()
+    expect(listenFirst.bind(null, 'string')).toThrow()
+    expect(listenFirst.bind(null, 42)).toThrow()
+    expect(listenFirst.bind(null, {})).toThrow()
   })
 
   test('should require array of arrays argument', () => {
-    expect(first.bind(null, [0])).toThrow()
-    expect(first.bind(null, ['string'])).toThrow()
-    expect(first.bind(null, [[ee1], 'string'])).toThrow()
+    expect(listenFirst.bind(null, [0])).toThrow()
+    expect(listenFirst.bind(null, ['string'])).toThrow()
+    expect(listenFirst.bind(null, [[ee1], 'string'])).toThrow()
   })
 
   test('should emit the first event', (done) => {

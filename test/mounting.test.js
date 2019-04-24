@@ -95,6 +95,7 @@ describe('app.use()', () => {
       invoked.push(1)
       next(new Error('err'))
     })
+    // eslint-disable-next-line handle-callback-err
     app.use((err, req, res, next) => {
       invoked.push(2)
       res.end(invoked.join(','))
@@ -149,7 +150,7 @@ describe('with a connect app', () => {
       .expect('blog', done)
   })
 
-  test('should set .route', function(){
+  test('should set .route', function () {
     const blog = Metal.createServer()
     const admin = Metal.createServer()
     app.use('/blog', blog)
@@ -181,11 +182,12 @@ describe('with a node app', () => {
   })
 })
 
-describe('error handling', function(){
+describe('error handling', function () {
   test('should send errors to airty 4 fns', (done) => {
     app.use((req, res, next) => {
       next(new Error('msg'))
     })
+    // eslint-disable-next-line handle-callback-err
     app.use((err, req, res, next) => {
       res.end(`got error ${err.message}`)
     })
@@ -249,6 +251,6 @@ describe('error handling', function(){
     app.use((err, req, res, next) => done())
     request(app)
       .get('/')
-      .end(function(){})
+      .end(function () {})
   })
 })

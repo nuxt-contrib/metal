@@ -2,7 +2,7 @@
 import assert from 'assert'
 import finalhandler from '../../src/final'
 import http from 'http'
-import request as _request from 'supertest'
+import _request from 'supertest'
 import SlowWriteStream from './sws'
 
 export const request = _request
