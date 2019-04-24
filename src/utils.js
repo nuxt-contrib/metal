@@ -3,6 +3,9 @@ import statuses from './statuses'
 
 // Parse the `str` url with fast-path short-cut.
 export function getURLPathname (url) {
+  if (!url) {
+    return url
+  }
   let i = 0
   for (; i < url.length; i++) {
     switch (url.charCodeAt(i)) {
@@ -17,6 +20,9 @@ export function getURLPathname (url) {
 
 // Parse a URL up to the end of the domain name
 export function trimURLPath (url) {
+  if (!url) {
+    return
+  }
   let i = 0
   let s = 0
   for (; i < url.length; i++) {

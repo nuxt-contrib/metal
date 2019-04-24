@@ -489,7 +489,7 @@ describe('onFinished(req, listener)', () => {
         assert.strictEqual(stderr, '')
         res.end()
       })
-      server.listen(() => {
+      server.listen(function () {
         let port = this.address().port
         http.get(`http://127.0.0.1:${port}`, (res) => {
           res.resume()
@@ -729,7 +729,7 @@ describe('isFinished(req)', () => {
         socket.on('error', noop)
         socket.write('W')
       })
-      server.listen(() => {
+      server.listen(function () {
         socket = net.connect(this.address().port, () => {
           writeRequest(this, true)
         })
