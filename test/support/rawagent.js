@@ -59,11 +59,11 @@ class RawRequest {
         res.on('end', () => {
           let err = null
           try {
-            assert.equal(res.statusCode, status, `expected ${status} status, got ${res.statusCode}`)
+            assert.strictEqual(res.statusCode, status, `expected ${status} status, got ${res.statusCode}`)
             if (body instanceof RegExp) {
               assert.ok(body.test(buf), 'expected body ' + buf + ' to match ' + body)
             } else {
-              assert.equal(buf, body, 'expected ' + body + ' response body, got ' + buf)
+              assert.strictEqual(buf, body, 'expected ' + body + ' response body, got ' + buf)
             }
           } catch (e) {
             err = e

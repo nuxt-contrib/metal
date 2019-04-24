@@ -1,4 +1,5 @@
 
+import assert from 'assert'
 import http from 'http'
 import Metal from '../src/index'
 import rawrequest from './support/rawagent'

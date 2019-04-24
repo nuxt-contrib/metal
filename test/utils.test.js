@@ -35,8 +35,8 @@ describe('first', () => {
       [ee3, 'a', 'b', 'c']
     ], (err, ee, event, args) => {
       assert.ifError(err)
-      assert.equal(ee, ee2)
-      assert.equal(event, 'b')
+      assert.strictEqual(ee, ee2)
+      assert.strictEqual(event, 'b')
       assert.deepEqual(args, [1, 2, 3])
       done()
     })
@@ -49,9 +49,9 @@ describe('first', () => {
       [ee2, 'error', 'b', 'c'],
       [ee3, 'error', 'b', 'c']
     ], function (err, ee, event, args) {
-      assert.equal(err.message, 'boom')
-      assert.equal(ee, ee3)
-      assert.equal(event, 'error')
+      assert.strictEqual(err.message, 'boom')
+      assert.strictEqual(ee, ee3)
+      assert.strictEqual(event, 'error')
       done()
     })
 
@@ -83,8 +83,8 @@ describe('first', () => {
     ])
     thunk(function (err, ee, event, args) {
       assert.ifError(err)
-      assert.equal(ee, ee2)
-      assert.equal(event, 'b')
+      assert.strictEqual(ee, ee2)
+      assert.strictEqual(event, 'b')
       assert.deepEqual(args, [1, 2, 3])
       done()
     })

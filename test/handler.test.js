@@ -491,7 +491,7 @@ describe('handler(req, res)', () => {
       request(createServer(err, { onerror: log }))
         .get('/')
         .end(() => {
-          assert.equal(error, err)
+          assert.strictEqual(error, err)
           done()
         })
     })
