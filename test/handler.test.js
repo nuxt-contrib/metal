@@ -1,7 +1,7 @@
 import assert from 'assert'
 import http from 'http'
 import { Buffer } from 'safe-buffer'
-import handler from '../../src/handler'
+import handler from '../src/handler'
 import {
   createServer,
   createError,

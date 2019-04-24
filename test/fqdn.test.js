@@ -1,5 +1,5 @@
 
-import Metal from '../../src/index'
+import Metal from '../src/index'
 import rawrequest from './support/rawagent'
 
 let app

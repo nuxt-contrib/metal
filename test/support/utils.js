@@ -1,6 +1,6 @@
 
 import assert from 'assert'
-import finalhandler from '../../src/final'
+import handler from '../../src/handler'
 import http from 'http'
 import _request from 'supertest'
 import SlowWriteStream from './sws'
@@ -21,7 +21,7 @@ export function createError (message, props) {
 
 export function createServer (err, opts) {
   return http.createServer(function (req, res) {
-    var done = finalhandler(req, res, opts)
+    var done = handler(req, res, opts)
 
     if (typeof err === 'function') {
       err(req, res, done)

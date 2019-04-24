@@ -1,6 +1,6 @@
 
 import http from 'http'
-import Metal from '../../src/index'
+import Metal from '../src/index'
 import { request } from './support/utils'
 
 let app
