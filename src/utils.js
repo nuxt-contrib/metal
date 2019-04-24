@@ -17,12 +17,12 @@ export function getURLPathname (url) {
         }
         break
       case 0x3f: /* ? */
-        return url.substr(offset, i)
+        return url.substring(offset, i)
       case 0x23: /* # */
-        return url.substr(offset, i)
+        return url.substring(offset, i)
     }
   }
-  return url.substr(offset, i)
+  return url.substring(offset, i)
 }
 
 // Parse a URL up to the end of the domain name
@@ -40,7 +40,7 @@ export function trimURLPath (url) {
           return
         }
         if (s > 2) {
-          return url.substr(0, i)
+          return url.substring(0, i)
         }
         break
     }

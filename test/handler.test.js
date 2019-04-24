@@ -223,13 +223,13 @@ describe('handler(req, res)', () => {
     test('should escape method and pathname characters', (done) => {
       rawrequest(createServer())
         .get('/<la\'me>')
-        .expect(404, '{"error":"Cannot GET /%3Cla&#39;me%3E"}', done)
+        .expect(404, '{"error":"Cannot GET /%3Cla\'me%3E"}', done)
     })
 
     test('should encode bad pathname characters', (done) => {
       rawrequest(createServer())
         .get('/foo%20§')
-        .expect(404, '{"error": "Cannot GET /foo%20%C2%A7"}', done)
+        .expect(404, '{"error":"Cannot GET /foo%20%C2%A7"}', done)
     })
 
     test('should fallback to generic pathname without URL', (done) => {
@@ -258,7 +258,7 @@ describe('handler(req, res)', () => {
     test('should include pathname only', (done) => {
       rawrequest(createServer())
         .get('http://localhost/foo?bar=1')
-        .expect(404, '{"error": Cannot GET /foo"}', done)
+        .expect(404, '{"error":"Cannot GET /foo"}', done)
     })
 
     test('should handle HEAD', (done) => {
