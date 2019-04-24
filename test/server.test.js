@@ -1,6 +1,6 @@
 
 import http from 'http'
-import Metal from '../../src/index'
+import Metal from '../src/index'
 import rawrequest from './support/rawagent'
 import request from 'supertest'
 
@@ -46,7 +46,7 @@ describe('app', () => {
     app.use((req, res) => {
       res.end('hello, world!')
     })
-    function handler(req, res) {
+    function handler (req, res) {
       res.write('oh, ')
       app(req, res)
     }
@@ -60,7 +60,7 @@ describe('app', () => {
     app.use('/foo', (req, res) => {
       res.end('hello, world!')
     })
-    function handler(req, res) {
+    function handler (req, res) {
       res.write('oh, ')
       app(req, res, () => res.end('no!'))
     }
@@ -74,9 +74,9 @@ describe('app', () => {
     app.use((req, res) => {
       throw new Error('boom!')
     })
-    function handler(req, res) {
+    function handler (req, res) {
       res.write('oh, ')
-      app(req, res, function(err) {
+      app(req, res, function (err) {
         res.end(err.message)
       })
     }
@@ -88,7 +88,7 @@ describe('app', () => {
   test('should work as middleware', (done) => {
     // custom server handler array
     const handlers = [Metal.createServer(), (req, res, next) => {
-      res.writeHead(200, {'Content-Type': 'text/plain'})
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
       res.end('Ok')
     }]
     // execute callbacks in sequence
@@ -170,7 +170,7 @@ describe('app', () => {
     it('should keep error statusCode', (done) => {
       const app = Metal.createServer()
       app.use((req, res, next) => {
-        res.statusCode = 503;
+        res.statusCode = 503
         throw new Error('ack!')
       })
       request(app)

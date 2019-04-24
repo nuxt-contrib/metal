@@ -17,7 +17,7 @@ describe('app.use()', () => {
       .expect(200, 'http://example.com/foo', done)
   })
 
-  describe('with a connect app', function(){
+  describe('with a connect app', function () {
     test('should ignore FQDN in search', (done) => {
       app.use('/proxy', (_, res) => res.end(req.url))
       rawrequest(app)

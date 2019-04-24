@@ -1,9 +1,8 @@
 /* eslint-env mocha */
 
-var EventEmitter = require('events').EventEmitter
-var assert = require('assert')
-
-var first = require('..')
+import { EventEmitter } from 'events'
+import assert from 'assert'
+import { listenFirst } from '../src/utils'
 
 let ee1
 let ee2

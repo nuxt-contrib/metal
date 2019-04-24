@@ -3,7 +3,7 @@
   "scripts": {
     "build": "rollup build/rollup.config.js",
     "test": "jest --detectOpenHandles --runInBand",
-    "lint": "eslint --fix --ext .js src",
+    "lint": "eslint --fix --ext .js src test",
     "docs:dev": "vuepress dev docs",
     "docs:build": "source deploy.sh"
   },
