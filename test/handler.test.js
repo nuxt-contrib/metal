@@ -217,19 +217,19 @@ describe('handler(req, res)', () => {
     test('should include method and pathname', (done) => {
       request(createServer())
         .get('/foo')
-        .expect(404, /<pre>Cannot GET \/foo<\/pre>/, done)
+        .expect(404, '{"error": "Cannot GET /foo"}', done)
     })
 
     test('should escape method and pathname characters', (done) => {
       rawrequest(createServer())
         .get('/<la\'me>')
-        .expect(404, /<pre>Cannot GET \/%3Cla&#39;me%3E<\/pre>/, done)
+        .expect(404, '{"error": "Cannot GET /%3Cla&#39;me%3E"}', done)
     })
 
     test('should encode bad pathname characters', (done) => {
       rawrequest(createServer())
         .get('/foo%20§')
-        .expect(404, /<pre>Cannot GET \/foo%20%C2%A7<\/pre>/, done)
+        .expect(404, '{"error": "Cannot GET /foo%20%C2%A7"}', done)
     })
 
     test('should fallback to generic pathname without URL', (done) => {
@@ -240,7 +240,7 @@ describe('handler(req, res)', () => {
 
       request(server)
         .get('/foo')
-        .expect(404, /<pre>Cannot GET resource<\/pre>/, done)
+        .expect(404, '{"error": Cannot GET resource"}', done)
     })
 
     test('should include original pathname', (done) => {
@@ -252,13 +252,13 @@ describe('handler(req, res)', () => {
       })
       request(server)
         .get('/foo/bar')
-        .expect(404, /<pre>Cannot GET \/foo\/bar<\/pre>/, done)
+        .expect(404, '{"error":"Cannot GET /foo/bar"}', done)
     })
 
     test('should include pathname only', (done) => {
       rawrequest(createServer())
         .get('http://localhost/foo?bar=1')
-        .expect(404, /<pre>Cannot GET \/foo<\/pre>/, done)
+        .expect(404, '{"error": Cannot GET /foo"}', done)
     })
 
     test('should handle HEAD', (done) => {
@@ -298,7 +298,7 @@ describe('handler(req, res)', () => {
     test('should include error stack', (done) => {
       request(createServer(createError('boom!')))
         .get('/foo')
-        .expect(500, /<pre>Error: boom!<br> &nbsp; &nbsp;at/, done)
+        .expect(500, '{"error":"Error: boom!<br> &nbsp; &nbsp;at/', done)
     })
 
     test('should handle HEAD', (done) => {
@@ -326,20 +326,20 @@ describe('handler(req, res)', () => {
     test('should handle non-error-objects', (done) => {
       request(createServer('lame string'))
         .get('/foo')
-        .expect(500, /<pre>lame string<\/pre>/, done)
+        .expect(500, '{"error":"lame string"}', done)
     })
 
     test('should handle null prototype objects', (done) => {
       request(createServer(Object.create(null)))
         .get('/foo')
-        .expect(500, /<pre>Internal Server Error<\/pre>/, done)
+        .expect(500, '{"error":"Internal Server Error"}', done)
     })
 
     test('should send staus code name when production', (done) => {
       const err = createError('boom!', { status: 501 })
       request(createServer(err, { env: 'production' }))
         .get('/foo')
-        .expect(501, /<pre>Not Implemented<\/pre>/, done)
+        .expect(501, '{"error":"Not Implemented"}', done)
     })
 
     describe('when there is a request body', () => {
@@ -427,7 +427,7 @@ describe('handler(req, res)', () => {
         const err = createError('boom!', { status: 509 })
         request(createServer(err, { env: 'production' }))
           .get('/foo')
-          .expect(509, /<pre>Bandwidth Limit Exceeded<\/pre>/, done)
+          .expect(509, '{"error": Bandwidth Limit Exceeded"}', done)
       })
     })
 

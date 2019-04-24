@@ -42,14 +42,14 @@ describe('app', () => {
       .expect(200, 'hello, world!', done)
   })
 
-  test('should be a callable function', (done) => {
+  test('should be a callable function', async (done) => {
     const app = Metal.createServer()
     app.use((req, res) => {
       res.end('hello, world!')
     })
-    function handler (req, res) {
+    async function handler (req, res) {
       res.write('oh, ')
-      app(req, res)
+      await app(req, res)
     }
     request(http.createServer(handler))
       .get('/')

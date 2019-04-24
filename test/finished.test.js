@@ -290,8 +290,8 @@ describe('isFinished(res)', () => {
         socket.on('error', noop)
         socket.write('W')
       })
-      server.listen(() => {
-        socket = net.connect(this.address().port, () => {
+      server.listen(function () {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
@@ -730,7 +730,7 @@ describe('isFinished(req)', () => {
         socket.write('W')
       })
       server.listen(function () {
-        socket = net.connect(this.address().port, () => {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
