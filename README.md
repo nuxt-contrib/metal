@@ -29,7 +29,7 @@ All without compromising performance, if not improving it slightly.
 ## Benchmark
 
 - **718k** requests in 40.14s connect-js
-- **807k** requests in 40.09s metal-js
+- **807k** requests in 40.09s nuxt/metal
 
 ```sh
 autocannon -c 100 -d 40 -p 10 localhost:3000
