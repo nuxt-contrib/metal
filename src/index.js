@@ -57,10 +57,11 @@ export default class Metal extends EventEmitter {
         return
       }
       const path = getURLPathname(req.url) || '/'
-      if (!path.match(layer.route)) {
-        return next(err)
+      if (path.match(layer.route)) {
+        return call(layer.handle, layer.route, err, req, res, next)
+      } else {
+        return next()
       }
-      return call(layer.handle, layer.route, err, req, res, next)
     }
     await next()
   }
@@ -68,9 +69,9 @@ export default class Metal extends EventEmitter {
 
 // Invoke a route handle.
 function call (handle, route, err, req, res, next) {
-  var arity = handle.length
-  var error = err
-  var hasError = Boolean(err)
+  const arity = handle.length
+  const hasError = Boolean(err)
+  let error = err
 
   try {
     if (hasError && arity === 4) {
