@@ -106,19 +106,18 @@ describe('app', () => {
       .expect(200, 'Ok', done)
   })
 
-  test('should escape the 500 response body', (done) => {
+  test('should include path info in 500 response body', (done) => {
     app.use((req, res, next) => {
       next(new Error('error!'))
     })
     request(app)
       .get('/')
-      .expect(/Error: error!<br>/)
-      .expect(/<br> &nbsp; &nbsp;at/)
+      .expect(/"Error: error!\\n/)
       .expect(500, done)
   })
 
   describe('404 handler', () => {
-    test('should escape the 404 response body', (done) => {
+    test('should include path info in 404 response body', (done) => {
       rawrequest(app)
         .get('/foo/<script>stuff\'n</script>')
         .expect(404, />Cannot GET \/foo\/%3Cscript%3Estuff&#39;n%3C\/script%3E</, done)

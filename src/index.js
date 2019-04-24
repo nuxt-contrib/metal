@@ -71,7 +71,6 @@ export default class Metal extends EventEmitter {
         setImmediate(done, err)
         return
       }
-      console.log(req.url)
       let path = getURLPathname(req.url) || '/'
       let route = layer.route
       if (path.toLowerCase().substr(0, route.length) !== route.toLowerCase()) {
