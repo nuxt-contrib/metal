@@ -1,10 +1,12 @@
 
 import statuses from './statuses'
 
+getURLPathname.cache = {}
+
 // Parse the `str` url with fast-path short-cut.
 export function getURLPathname (url) {
-  if (!url) {
-    return url
+  if (!url || url in getURLPathname.cache) {
+    return getURLPathname.cache[url] || url
   }
   let offset = 0
   let slashes = 0
@@ -22,13 +24,16 @@ export function getURLPathname (url) {
         return url.substring(offset, i)
     }
   }
-  return url.substring(offset, i)
+  // eslint-disable-next-line no-cond-assign
+  return getURLPathname.cache[url] = url.substring(offset, i)
 }
+
+trimURLPath.cache = {}
 
 // Parse a URL up to the end of the domain name
 export function trimURLPath (url) {
-  if (!url) {
-    return
+  if (!url || url in trimURLPath.cache) {
+    return trimURLPath.cache[url] || url
   }
   let i = 0
   let s = 0
@@ -77,6 +82,18 @@ export function encodeURL (url) {
   return String(url)
     .replace(UNMATCHED_SURROGATE_PAIR_REGEXP, UNMATCHED_SURROGATE_PAIR_REPLACE)
     .replace(ENCODE_CHARS_REGEXP, encodeURI)
+}
+
+// Determine if message is already finished
+export function isFinished (msg) {
+  const socket = msg.socket
+  if (typeof msg.finished === 'boolean') { // OutgoingMessage
+    return Boolean(msg.finished || (socket && !socket.writable))
+  }
+  if (typeof msg.complete === 'boolean') { // IncomingMessage
+    return Boolean(msg.upgrade || !socket || !socket.readable || (msg.complete && !msg.readable))
+  }
+  return undefined
 }
 
 // Get the first event in a set of event emitters and event pairs.

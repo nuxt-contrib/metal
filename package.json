@@ -1,7 +1,7 @@
 {
   "name": "@nuxt/metal",
   "scripts": {
-    "build": "rollup build/rollup.config.js",
+    "build": "rollup -c build/rollup.config.js",
     "test": "jest --detectOpenHandles --runInBand",
     "lint": "eslint --fix --ext .js src test",
     "docs:dev": "vuepress dev docs",
@@ -12,6 +12,7 @@
     "babel-jest": "^23.6.0",
     "babel-plugin-dynamic-import-node": "^2.2.0",
     "babel-preset-env": "^1.7.0",
+    "connect": "^3.6.6",
     "defu": "^0.0.1",
     "eslint": "^5.9.0",
     "eslint-config-standard": "^12.0.0",

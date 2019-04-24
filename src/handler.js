@@ -1,10 +1,6 @@
 
 import statuses from './statuses'
-
-import {
-  onFinished,
-  isFinished
-} from './finished'
+import { isFinished } from './utils'
 
 import {
   encodeURL,
@@ -75,6 +71,16 @@ function send (req, res, status, headers, message) {
     return
   }
   req.unpipe()
-  onFinished(req, write)
+  new Promise((resolve) => {
+    function onFinished() {
+      req.removeListener('close', onFinished)
+      req.removeListener('end', onFinished)
+      write()
+      resolve()
+    }
+    req.on('close', onFinished)
+    req.on('end', onFinished)
+  })
   req.resume()
 }
+

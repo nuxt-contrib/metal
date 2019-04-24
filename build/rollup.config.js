@@ -9,7 +9,7 @@ const input = 'src/index.js'
 const pkg = readJSONSync(path.resolve(rootDir, 'package.json'))
 const name = path.basename(pkg.name)
 
-module.exports = {
+export default {
   input: path.resolve(rootDir, input),
   output: {
     dir: path.resolve(rootDir, 'dist'),

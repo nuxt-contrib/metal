@@ -26,6 +26,15 @@ of connect in modern JavaScript, with added support for async middleware and a
 restructured codebase with many simplifications, cleanups and idiomatic rewrites.
 All without compromising performance, if not improving it slightly.
 
+## Benchmark
+
+- **718k** requests in 40.14s connect-js
+- **807k** requests in 40.09s metal-js
+
+```sh
+autocannon -c 100 -d 40 -p 10 localhost:3000
+```
+
 ## Acknowledgement
 
 This module is largely based on the work of [TJ Holowaychuk][tj], [Douglas 

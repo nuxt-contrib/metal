@@ -7,8 +7,8 @@ import handler from './handler'
 export default class Metal extends EventEmitter {
   static createServer () {
     const app = new Metal()
-    async function appHandler () {
-      await appHandler.handle(...arguments)
+    function appHandler () {
+      return appHandler.handle(...arguments)
     }
     appHandler.route = '/'
     appHandler.stack = []
@@ -34,9 +34,7 @@ export default class Metal extends EventEmitter {
     if (typeof handle.handle === 'function') {
       const server = handle
       server.route = route
-      handle = async function (req, res, next) {
-        await server.handle(req, res, next)
-      }
+      handle = (req, res, next) => server.handle(req, res, next)
     }
     // wrap vanilla http.Servers
     if (handle instanceof http.Server) {
@@ -51,18 +49,19 @@ export default class Metal extends EventEmitter {
   }
   async handle (req, res, out) {
     let index = 0
-    let protohost = trimURLPath(req.url) || ''
+    let protohost
     let removed = ''
     let slashAdded = false
     let stack = this.stack
     req.originalUrl = req.originalUrl || req.url
     let done = out || handler(req, res, { env, onerror })
-    async function next (err) {
+    function next (err) {
       if (slashAdded) {
         req.url = req.url.substr(1)
         slashAdded = false
       }
       if (removed.length !== 0) {
+        protohost = trimURLPath(req.url) || ''
         req.url = protohost + removed + req.url.substr(protohost.length)
         removed = ''
       }
@@ -84,6 +83,7 @@ export default class Metal extends EventEmitter {
       // trim off the part of the url that matches the route
       if (route.length !== 0 && route !== '/') {
         removed = route
+        protohost = trimURLPath(req.url) || ''
         req.url = protohost + req.url.substr(protohost.length + removed.length)
         // ensure leading slash
         if (!protohost && req.url[0] !== '/') {
@@ -92,14 +92,14 @@ export default class Metal extends EventEmitter {
         }
       }
       // call the layer handle
-      await call(layer.handle, route, err, req, res, next)
+      return call(layer.handle, route, err, req, res, next)
     }
     await next()
   }
 }
 
 // Invoke a route handle.
-async function call (handle, route, err, req, res, next) {
+function call (handle, route, err, req, res, next) {
   var arity = handle.length
   var error = err
   var hasError = Boolean(err)
@@ -107,18 +107,16 @@ async function call (handle, route, err, req, res, next) {
   try {
     if (hasError && arity === 4) {
       // error-handling middleware
-      await handle(err, req, res, next)
-      return
+      return handle(err, req, res, next)
     } else if (!hasError && arity < 4) {
       // request-handling middleware
-      await handle(req, res, next)
-      return
+      return handle(req, res, next)
     }
   } catch (e) {
     // replace the error
     error = e
   }
-  await next(error)
+  return next(error)
 }
 
 const env = process.env.NODE_ENV || 'development'
