@@ -188,7 +188,7 @@ describe('onFinished(res, listener)', () => {
 
 describe('isFinished(res)', () => {
   test('should return undefined for unknown object', () => {
-    expect(onFinished.isFinished({}).toBeUndefined()
+    expect(onFinished.isFinished({})).toBeUndefined()
   })
 
   test('should be false before response finishes', (done) => {
@@ -399,7 +399,7 @@ describe('onFinished(req, listener)', () => {
         socket.write('W')
       })
       server.listen(function () {
-        socket = net.connect(this.address().port, function() {
+        socket = net.connect(this.address().port, function () {
           writeRequest(this, true)
         })
       })
@@ -674,7 +674,7 @@ describe('onFinished(req, listener)', () => {
 
 describe('isFinished(req)', () => {
   test('should return undefined for unknown object', () => {
-    expect(onFinished.isFinished({}).toBeUndefined()
+    expect(onFinished.isFinished({})).toBeUndefined()
   })
 
   test('should be false before request finishes', (done) => {
