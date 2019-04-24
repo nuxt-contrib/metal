@@ -1,3 +1,4 @@
+import assert from 'assert'
 import http from 'http'
 import { Buffer } from 'safe-buffer'
 import handler from '../../src/handler'
@@ -14,8 +15,8 @@ import {
 
 const describeStatusMessage = !/statusMessage/
   .test(http.IncomingMessage.toString())
-    ? describe.skip
-    : describe
+  ? describe.skip
+  : describe
 
 describe('handler(req, res)', () => {
   describe('headers', () => {

@@ -195,7 +195,7 @@ describe('error handling', function(){
   })
 
   test('should skip to non-error middleware', (done) => {
-    le tinvoked = false
+    let invoked = false
     app.use((req, res, next) => {
       next(new Error('msg'))
     })
