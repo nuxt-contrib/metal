@@ -2,7 +2,7 @@
 // See this thread on StackOverflow for details:
 // https://stackoverflow.com/questions/54526179/node-js-difference-between-http-finish-event-response-close-event-and-respons
 
-import { listenOnce } from './utils'
+import { listenFirst } from './utils'
 
 // Invoke callback when the response has finished
 // Useful for cleaning up resources afterwards
@@ -40,14 +40,14 @@ function attachFinishedListener (msg, callback) {
     callback(error)
   }
   // finished on first message event
-  eeMsg = eeSocket = listenOnce([[msg, 'end', 'finish']], onFinish)
+  eeMsg = eeSocket = listenFirst([[msg, 'end', 'finish']], onFinish)
   function onSocket (socket) {
     msg.removeListener('socket', onSocket)
     if (finished || eeMsg !== eeSocket) {
       return
     }
     // finished on first socket event
-    eeSocket = listenOnce([[socket, 'error', 'close']], onFinish)
+    eeSocket = listenFirst([[socket, 'error', 'close']], onFinish)
   }
   if (msg.socket) {
     onSocket(msg.socket)

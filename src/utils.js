@@ -67,7 +67,7 @@ export function encodeURL (url) {
 }
 
 // Get the first event in a set of event emitters and event pairs.
-export function listenOnce (stuff, done) {
+export function listenFirst (stuff, done) {
   const cleanups = []
   for (const arr of stuff) {
     if (!Array.isArray(arr) || arr.length < 2) {
