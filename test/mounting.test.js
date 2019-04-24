@@ -133,8 +133,8 @@ describe('app.use()', () => {
       app.use('/blog', blog)
       blog.use('/admin', admin)
       expect(app.route).toBe('/')
-      expect(blog.route).toBe('/blog')
-      expect(admin.route).toBe('/admin')
+      expect(blog.route).toBeInstanceOf(RegExp)
+      expect(admin.route).toBeInstanceOf(RegExp)
     })
 
     test('should not add trailing slash to req.url', (done) => {
