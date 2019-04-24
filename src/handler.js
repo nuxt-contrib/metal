@@ -4,7 +4,6 @@ import { isFinished } from './utils'
 
 import {
   encodeURL,
-  getHeadersSent,
   getResponseStatusCode,
   getErrorHeaders,
   getErrorStatusCode,
@@ -24,7 +23,7 @@ export default function (req, res, options) {
     let msg
     let status
     // ignore 404 on in-flight response
-    if (!err && getHeadersSent(res)) {
+    if (!err && res.headersSent) {
       return
     }
     if (err) {
@@ -42,7 +41,7 @@ export default function (req, res, options) {
     if (err && onerror) {
       setImmediate(onerror, err, req, res)
     }
-    if (getHeadersSent(res)) {
+    if (res.headersSent) {
       req.socket.destroy()
       return
     }

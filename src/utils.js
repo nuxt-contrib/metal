@@ -140,13 +140,6 @@ export function getResponseStatusCode (res) {
   return status
 }
 
-// Determine if the response headers have been sent.
-export function getHeadersSent (res) {
-  return typeof res.headersSent !== 'boolean'
-    ? Boolean(res._header)
-    : res.headersSent
-}
-
 // Get headers from Error object
 export function getErrorHeaders (err) {
   if (!err.headers || typeof err.headers !== 'object') {
