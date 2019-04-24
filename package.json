@@ -5,12 +5,12 @@
     "test": "jest --detectOpenHandles --runInBand",
     "lint": "eslint --fix --ext .js src",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "source deploy.sh",
-    "postinstall": "yarn link && yarn link fabula"
+    "docs:build": "source deploy.sh"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
+    "babel-plugin-dynamic-import-node": "^2.2.0",
     "babel-preset-env": "^1.7.0",
     "defu": "^0.0.1",
     "eslint": "^5.9.0",

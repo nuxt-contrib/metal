@@ -1,0 +1,10 @@
+{
+  "presets": ["env"],
+  "env": {
+    "test": {
+      "plugins": [
+        "babel-plugin-dynamic-import-node"
+      ]
+    }
+  }
+}
