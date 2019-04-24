@@ -19,7 +19,7 @@ export function createError (message, props) {
   return err
 }
 
-function createServer (err, opts) {
+export function createServer (err, opts) {
   return http.createServer(function (req, res) {
     var done = finalhandler(req, res, opts)
 

@@ -248,6 +248,7 @@ describe('error handling', function () {
       res.end('0')
       next(new Error('msg'))
     })
+    // eslint-disable-next-line handle-callback-err
     app.use((err, req, res, next) => done())
     request(app)
       .get('/')

@@ -29,7 +29,7 @@ describe('first', () => {
   })
 
   test('should emit the first event', (done) => {
-    listenOnce([
+    listenFirst([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
       [ee3, 'a', 'b', 'c']
@@ -37,14 +37,14 @@ describe('first', () => {
       assert.ifError(err)
       assert.strictEqual(ee, ee2)
       assert.strictEqual(event, 'b')
-      assert.deepEqual(args, [1, 2, 3])
+      assert.deepStrictEqual(args, [1, 2, 3])
       done()
     })
     ee2.emit('b', 1, 2, 3)
   })
 
   test('it should return an error if event === error', (done) => {
-    first([
+    listenFirst([
       [ee1, 'error', 'b', 'c'],
       [ee2, 'error', 'b', 'c'],
       [ee3, 'error', 'b', 'c']
@@ -59,7 +59,7 @@ describe('first', () => {
   })
 
   test('should cleanup after itself', (done) => {
-    first([
+    listenFirst([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
       [ee3, 'a', 'b', 'c']
@@ -76,7 +76,7 @@ describe('first', () => {
   })
 
   test('should return a thunk', (done) => {
-    var thunk = first([
+    var thunk = listenFirst([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
       [ee3, 'a', 'b', 'c']
@@ -85,7 +85,7 @@ describe('first', () => {
       assert.ifError(err)
       assert.strictEqual(ee, ee2)
       assert.strictEqual(event, 'b')
-      assert.deepEqual(args, [1, 2, 3])
+      assert.deepStrictEqual(args, [1, 2, 3])
       done()
     })
     ee2.emit('b', 1, 2, 3)
@@ -104,7 +104,7 @@ describe('first', () => {
   })
 
   test('should cleanup after thunk.cancel()', function (done) {
-    var thunk = first([
+    var thunk = listenFirst([
       [ee1, 'a', 'b', 'c'],
       [ee2, 'a', 'b', 'c'],
       [ee3, 'a', 'b', 'c']
