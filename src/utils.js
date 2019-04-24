@@ -6,16 +6,23 @@ export function getURLPathname (url) {
   if (!url) {
     return url
   }
+  let offset = 0
+  let slashes = 0
   let i = 0
   for (; i < url.length; i++) {
     switch (url.charCodeAt(i)) {
+      case 47: /* / */
+        if (++slashes > 2) {
+          offset = i
+        }
+        break
       case 0x3f: /* ? */
-        return url.substr(0, i)
+        return url.substr(offset, i)
       case 0x23: /* # */
-        return url.substr(0, i)
+        return url.substr(offset, i)
     }
   }
-  return url.substr(0, i)
+  return url.substr(offset, i)
 }
 
 // Parse a URL up to the end of the domain name
