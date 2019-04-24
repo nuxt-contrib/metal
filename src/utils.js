@@ -10,12 +10,12 @@ export function getURLPathname (url) {
   for (; i < url.length; i++) {
     switch (url.charCodeAt(i)) {
       case 0x3f: /* ? */
-        return url.substring(0, i)
+        return url.substr(0, i)
       case 0x23: /* # */
-        return url.substring(0, i)
+        return url.substr(0, i)
     }
   }
-  return url.substring(0, i)
+  return url.substr(0, i)
 }
 
 // Parse a URL up to the end of the domain name
