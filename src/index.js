@@ -7,11 +7,14 @@ import handler from './handler'
 export default class Metal extends EventEmitter {
   static createServer () {
     const app = new Metal()
-    app.route = '/'
-    app.stack = []
-    const appHandler = async function () {
-      await app.handle(arguments)
+    async function appHandler () {
+      await appHandler.handle(arguments)
     }
+    appHandler.route = '/'
+    appHandler.stack = []
+    appHandler.use = app.use.bind(appHandler)
+    appHandler.listen = app.listen.bind(appHandler)
+    appHandler.handle = app.handle.bind(appHandler)
     for (const member in Metal.prototype) {
       appHandler[member] = Metal.prototype[member]
     }

@@ -2,7 +2,7 @@
 import assert from 'assert'
 import http from 'http'
 import net from 'net'
-import { onFinished } from '../../src/finished'
+import { onFinished, isFinished } from '../src/finished'
 
 describe('onFinished(res, listener)', () => {
   test('should invoke listener given an unknown object', (done) => {
@@ -189,12 +189,12 @@ describe('onFinished(res, listener)', () => {
 
 describe('isFinished(res)', () => {
   test('should return undefined for unknown object', () => {
-    expect(onFinished.isFinished({})).toBeUndefined()
+    expect(isFinished({})).toBeUndefined()
   })
 
   test('should be false before response finishes', (done) => {
     const server = http.createServer((req, res) => {
-      assert.ok(!onFinished.isFinished(res))
+      assert.ok(!isFinished(res))
       res.end()
       done()
     })
@@ -205,7 +205,7 @@ describe('isFinished(res)', () => {
     const server = http.createServer((req, res) => {
       onFinished(res, (err) => {
         assert.ifError(err)
-        assert.ok(onFinished.isFinished(res))
+        assert.ok(isFinished(res))
         done()
       })
       res.end()
@@ -225,8 +225,8 @@ describe('isFinished(res)', () => {
           if (++count !== 2) {
             return
           }
-          assert.ok(!onFinished.isFinished(responses[0]))
-          assert.ok(!onFinished.isFinished(responses[1]))
+          assert.ok(!isFinished(responses[0]))
+          assert.ok(!isFinished(responses[1]))
           responses[0].end()
           responses[1].end()
           socket.end()
@@ -284,7 +284,7 @@ describe('isFinished(res)', () => {
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ok(err)
-          assert.ok(onFinished.isFinished(res))
+          assert.ok(isFinished(res))
           server.close(done)
         })
         socket.on('error', noop)
@@ -304,7 +304,7 @@ describe('isFinished(res)', () => {
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ifError(err)
-          assert.ok(onFinished.isFinished(res))
+          assert.ok(isFinished(res))
           server.close(done)
         })
         setTimeout(client.abort.bind(client), 0)
@@ -675,12 +675,12 @@ describe('onFinished(req, listener)', () => {
 
 describe('isFinished(req)', () => {
   test('should return undefined for unknown object', () => {
-    expect(onFinished.isFinished({})).toBeUndefined()
+    expect(isFinished({})).toBeUndefined()
   })
 
   test('should be false before request finishes', (done) => {
     const server = http.createServer((req, res) => {
-      assert.ok(!onFinished.isFinished(req))
+      assert.ok(!isFinished(req))
       req.resume()
       res.end()
       done()
@@ -692,7 +692,7 @@ describe('isFinished(req)', () => {
     const server = http.createServer((req, res) => {
       onFinished(req, (err) => {
         assert.ifError(err)
-        assert.ok(onFinished.isFinished(req))
+        assert.ok(isFinished(req))
         done()
       })
       req.resume()
@@ -704,10 +704,10 @@ describe('isFinished(req)', () => {
   describe('when request data buffered', () => {
     test('should be false before request finishes', (done) => {
       const server = http.createServer((req, res) => {
-        assert.ok(!onFinished.isFinished(req))
+        assert.ok(!isFinished(req))
         req.pause()
         setTimeout(() => {
-          assert.ok(!onFinished.isFinished(req))
+          assert.ok(!isFinished(req))
           req.resume()
           res.end()
           done()
@@ -723,7 +723,7 @@ describe('isFinished(req)', () => {
       const server = http.createServer((req, res) => {
         onFinished(req, (err) => {
           assert.ok(err)
-          assert.ok(onFinished.isFinished(req))
+          assert.ok(isFinished(req))
           server.close(done)
         })
         socket.on('error', noop)
@@ -743,7 +743,7 @@ describe('isFinished(req)', () => {
       const server = http.createServer((req, res) => {
         onFinished(res, (err) => {
           assert.ifError(err)
-          assert.ok(onFinished.isFinished(req))
+          assert.ok(isFinished(req))
           server.close(done)
         })
         setTimeout(client.abort.bind(client), 0)
@@ -764,7 +764,7 @@ describe('isFinished(req)', () => {
         res.end()
       })
       server.on('connect', (req, socket, bodyHead) => {
-        assert.ok(onFinished.isFinished(req))
+        assert.ok(isFinished(req))
         assert.strictEqual(bodyHead.length, 0)
         req.resume()
         socket.on('data', (chunk) => {
@@ -802,7 +802,7 @@ describe('isFinished(req)', () => {
         let data = [bodyHead]
         onFinished(req, (err) => {
           assert.ifError(err)
-          assert.ok(onFinished.isFinished(req))
+          assert.ok(isFinished(req))
           assert.strictEqual(Buffer.concat(data).toString(), 'knock, knock')
           socket.write('HTTP/1.1 200 OK\r\n\r\n')
         })
@@ -841,7 +841,7 @@ describe('isFinished(req)', () => {
         res.end()
       })
       server.on('upgrade', (req, socket, bodyHead) => {
-        assert.ok(onFinished.isFinished(req))
+        assert.ok(isFinished(req))
         assert.strictEqual(bodyHead.length, 0)
         req.resume()
         socket.on('data', (chunk) => {
@@ -884,7 +884,7 @@ describe('isFinished(req)', () => {
         let data = [bodyHead]
         onFinished(req, (err) => {
           assert.ifError(err)
-          assert.ok(onFinished.isFinished(req))
+          assert.ok(isFinished(req))
           assert.strictEqual(Buffer.concat(data).toString(), 'knock, knock')
           socket.write('HTTP/1.1 101 Switching Protocols\r\n')
           socket.write('Connection: Upgrade\r\n')
