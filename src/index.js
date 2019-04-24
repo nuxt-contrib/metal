@@ -8,7 +8,7 @@ export default class Metal extends EventEmitter {
   static createServer () {
     const app = new Metal()
     async function appHandler () {
-      await appHandler.handle(arguments)
+      await appHandler.handle(...arguments)
     }
     appHandler.route = '/'
     appHandler.stack = []

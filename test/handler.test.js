@@ -298,7 +298,7 @@ describe('handler(req, res)', () => {
     test('should include error stack', (done) => {
       request(createServer(createError('boom!')))
         .get('/foo')
-        .expect(500, '{"error":"Error: boom!<br> &nbsp; &nbsp;at/', done)
+        .expect(500, /{"error":"Error: boom!/, done)
     })
 
     test('should handle HEAD', (done) => {
@@ -427,7 +427,7 @@ describe('handler(req, res)', () => {
         const err = createError('boom!', { status: 509 })
         request(createServer(err, { env: 'production' }))
           .get('/foo')
-          .expect(509, '{"error": Bandwidth Limit Exceeded"}', done)
+          .expect(509, '{"error":"Bandwidth Limit Exceeded"}', done)
       })
     })
 

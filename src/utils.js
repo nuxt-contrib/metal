@@ -153,6 +153,7 @@ export function getErrorStatusCode (err) {
   if (typeof err.statusCode === 'number' && err.statusCode >= 400 && err.statusCode < 600) {
     return err.statusCode
   }
+  return undefined
 }
 
 // Get message from Error object, fallback to status message.

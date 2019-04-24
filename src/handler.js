@@ -18,11 +18,11 @@ import {
 } from './utils'
 
 // Create a function to handle the final response.
-export default function finalHandler (req, res, options) {
-  var opts = options || {}
-  var env = opts.env || process.env.NODE_ENV || 'development'
+export default function (req, res, options) {
+  const opts = options || {}
+  const env = opts.env || process.env.NODE_ENV || 'development'
   // get error callback
-  var onerror = opts.onerror
+  const onerror = opts.onerror
   return function (err) {
     let headers
     let msg
