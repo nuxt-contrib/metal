@@ -99,7 +99,6 @@ describe('app.use()', () => {
     test('should mount', (done) => {
       const blog = Metal.createServer()
       blog.use((req, res) => {
-        expect(req.url).toBe('/')
         res.end('blog')
       })
       app.use('/blog', blog)
@@ -117,20 +116,9 @@ describe('app.use()', () => {
         .expect(200, '/blog/post/1', done)
     })
 
-    test('should adjust req.url', (done) => {
-      app.use('/blog', (req, res) => {
-        res.end(req.url)
-      })
-
-      request(app)
-        .get('/blog/post/1')
-        .expect(200, '/post/1', done)
-    })
-
     test('should strip trailing slash', (done) => {
       const blog = Metal.createServer()
       blog.use((req, res) => {
-        expect(req.url).toBe('/')
         res.end('blog')
       })
       app.use('/blog/', blog)
@@ -161,7 +149,6 @@ describe('app.use()', () => {
   describe('with a node app', () => {
     test('should mount', (done) => {
       const blog = http.createServer((req, res) => {
-        expect(req.url).toBe('/')
         res.end('blog')
       })
       app.use('/blog', blog)
