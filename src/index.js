@@ -4,6 +4,7 @@ import { escapeRegExp } from './utils'
 import handler from './handler'
 
 const env = process.env.NODE_ENV || 'development'
+const metalStack = Symbol('metal:stack')
 
 export default class Metal extends EventEmitter {
   static createServer () {
@@ -12,7 +13,7 @@ export default class Metal extends EventEmitter {
       return appHandler.handle(req, res, next)
     }
     appHandler.route = '/'
-    appHandler.stack = []
+    appHandler[metalStack] = []
     appHandler.use = app.use.bind(appHandler)
     appHandler.listen = app.listen.bind(appHandler)
     appHandler.handle = app.handle.bind(appHandler)
@@ -43,12 +44,12 @@ export default class Metal extends EventEmitter {
     if (handle instanceof http.Server) {
       handle = handle.listeners('request')[0]
     }
-    this.stack.push({ route, handle })
+    this[metalStack].push({ route, handle })
     return this
   }
   async handle (req, res, out) {
     let index = 0
-    const stack = this.stack
+    const stack = this[metalStack]
     req.originalUrl = req.originalUrl || req.url
     const done = out || handler(req, res, { env, onerror })
     function next (err) {
