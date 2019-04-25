@@ -155,12 +155,3 @@ export function getErrorMessage (err, status, env) {
   }
   return msg || statuses[status]
 }
-
-// Get resource name for the request.
-export function getResourceName (req) {
-  let pn
-  if (pn = getURLPathname(req.originalUrl || req.url)) {
-    return pn
-  }
-  return 'resource'
-}

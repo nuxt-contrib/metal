@@ -46,18 +46,21 @@ export default class Metal extends EventEmitter {
     return this
   }
   async handle (req, res, out) {
+    let layer
+    let path
+    let match
     let index = 0
     let stack = this.stack
     req.originalUrl = req.originalUrl || req.url
     let done = out || handler(req, res, { env, onerror })
     function next (err) {
-      const layer = stack[index++]
+      layer = stack[index++]
       if (!layer) {
         setImmediate(done, err)
         return
       }
-      const path = req.url
-      const match = path.match(layer.route)
+      path = req.url
+      match = path.match(layer.route)
       if (match) {
         req.match = match
         return call(layer.handle, layer.route, err, req, res, next)

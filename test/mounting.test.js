@@ -116,17 +116,6 @@ describe('app.use()', () => {
         .expect(200, '/blog/post/1', done)
     })
 
-    test('should strip trailing slash', (done) => {
-      const blog = Metal.createServer()
-      blog.use((req, res) => {
-        res.end('blog')
-      })
-      app.use('/blog/', blog)
-      request(app)
-        .get('/blog')
-        .expect('blog', done)
-    })
-
     test('should set .route', function () {
       const blog = Metal.createServer()
       const admin = Metal.createServer()

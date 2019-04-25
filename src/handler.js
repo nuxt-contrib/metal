@@ -8,8 +8,7 @@ import {
   getErrorHeaders,
   getErrorStatusCode,
   getErrorMessage,
-  setHeaders,
-  getResourceName
+  setHeaders
 } from './utils'
 
 // Create a function to handle the final response.
@@ -36,7 +35,7 @@ export default function (req, res, options) {
       msg = getErrorMessage(err, status, env)
     } else {
       status = 404
-      msg = `Cannot ${req.method} ${encodeURL(getResourceName(req))}`
+      msg = `Cannot ${req.method} ${encodeURL(req.url || 'resource')}`
     }
     if (err && onerror) {
       setImmediate(onerror, err, req, res)

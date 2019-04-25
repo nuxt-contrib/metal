@@ -243,24 +243,6 @@ describe('handler(req, res)', () => {
         .expect(404, '{"error":"Cannot GET resource"}', done)
     })
 
-    test('should include original pathname', (done) => {
-      const server = createServer((req, res, next) => {
-        const parts = req.url.split('/')
-        req.originalUrl = req.url
-        req.url = `/${parts.slice(2).join('/')}`
-        next()
-      })
-      request(server)
-        .get('/foo/bar')
-        .expect(404, '{"error":"Cannot GET /foo/bar"}', done)
-    })
-
-    test('should include pathname only', (done) => {
-      rawrequest(createServer())
-        .get('http://localhost/foo?bar=1')
-        .expect(404, '{"error":"Cannot GET /foo"}', done)
-    })
-
     test('should handle HEAD', (done) => {
       request(createServer())
         .head('/foo')

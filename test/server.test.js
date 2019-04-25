@@ -2,8 +2,13 @@
 import assert from 'assert'
 import http from 'http'
 import Metal from '../src/index'
+import { escapeRegExp } from '../src/utils'
 import rawrequest from './support/rawagent'
 import request from 'supertest'
+
+function re(str) {
+  return new RegExp(escapeRegExp(str), 'i')
+}
 
 describe('app.listen()', () => {
   test('should wrap in an http.Server', (done) => {
@@ -120,7 +125,7 @@ describe('app', () => {
     test('should include path info in 404 response body', (done) => {
       rawrequest(app)
         .get('/foo/<script>stuff\'n</script>')
-        .expect(404, />Cannot GET \/foo\/%3Cscript%3Estuff&#39;n%3C\/script%3E</, done)
+        .expect(404, re('{"error":"Cannot GET /foo/%3Cscript%3Estuff\'n%3C'), done)
     })
 
     test('shoud not fire after headers sent', (done) => {
@@ -152,7 +157,7 @@ describe('app', () => {
       })
       request(app)
         .get('/')
-        .expect(500, /&lt;script&gt;alert\(\)&lt;\/script&gt;/, done)
+        .expect(500, re('{"error":"Error: <script>alert()</script>'), done)
     })
 
     it('should use custom error code', (done) => {
