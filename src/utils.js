@@ -1,8 +1,6 @@
 
 import statuses from './statuses'
 
-getURLPathname.cache = {}
-
 export function escapeRegExp(str) {
   return str.replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1')
 }
