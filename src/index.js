@@ -7,8 +7,8 @@ import handler from './handler'
 export default class Metal extends EventEmitter {
   static createServer () {
     const app = new Metal()
-    function appHandler () {
-      return appHandler.handle(...arguments)
+    function appHandler (req, res, next) {
+      return appHandler.handle(req, res, next)
     }
     appHandler.route = '/'
     appHandler.stack = []
@@ -46,24 +46,20 @@ export default class Metal extends EventEmitter {
     return this
   }
   async handle (req, res, out) {
-    let layer
-    let path
-    let match
+    // let layer
     let index = 0
     let stack = this.stack
     req.originalUrl = req.originalUrl || req.url
     let done = out || handler(req, res, { env, onerror })
     function next (err) {
-      layer = stack[index++]
+      const layer = stack[index++]
       if (!layer) {
+        delete req.match
         setImmediate(done, err)
         return
       }
-      path = req.url
-      match = path.match(layer.route)
-      if (match) {
-        req.match = match
-        return call(layer.handle, layer.route, err, req, res, next)
+      if (req.match = req.url.match(layer.route)) {
+        return call(layer, err, req, res, next)
       } else {
         return next()
       }
@@ -73,18 +69,18 @@ export default class Metal extends EventEmitter {
 }
 
 // Invoke a route handle.
-function call (handle, route, err, req, res, next) {
-  const arity = handle.length
+function call (layer, err, req, res, next) {
+  const arity = layer.handle.length
   const hasError = Boolean(err)
   let error = err
 
   try {
     if (hasError && arity === 4) {
       // error-handling middleware
-      return handle(err, req, res, next)
+      return layer.handle(err, req, res, next)
     } else if (!hasError && arity < 4) {
       // request-handling middleware
-      return handle(req, res, next)
+      return layer.handle(req, res, next)
     }
   } catch (e) {
     // replace the error
