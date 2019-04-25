@@ -1,5 +1,5 @@
 
-import statuses from './statuses'
+import { STATUS_CODES as statuses } from 'http'
 import { isFinished } from './utils'
 
 import {
@@ -71,13 +71,15 @@ function send (req, res, status, headers, message) {
   req.unpipe()
   new Promise((resolve) => {
     function onFinished() {
-      req.removeListener('close', onFinished)
       req.removeListener('end', onFinished)
+      res.removeListener('finish', onFinished)
+      res.removeListener('close', onFinished)
       write()
       resolve()
     }
-    req.on('close', onFinished)
     req.on('end', onFinished)
+    res.on('finish', onFinished)
+    res.on('close', onFinished)
   })
   req.resume()
 }

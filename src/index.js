@@ -1,8 +1,9 @@
-
 import http from 'http'
 import { EventEmitter } from 'events'
 import { escapeRegExp } from './utils'
 import handler from './handler'
+
+const env = process.env.NODE_ENV || 'development'
 
 export default class Metal extends EventEmitter {
   static createServer () {
@@ -28,7 +29,7 @@ export default class Metal extends EventEmitter {
     // default route to '/'
     if (typeof route !== 'string' || route instanceof RegExp) {
       handle = route
-      route = '/'
+      route = /\//
     } else if (!(route instanceof RegExp)) {
       route = new RegExp(escapeRegExp(route), 'i')
     }
@@ -46,20 +47,17 @@ export default class Metal extends EventEmitter {
     return this
   }
   async handle (req, res, out) {
-    // let layer
     let index = 0
-    let stack = this.stack
+    const stack = this.stack
     req.originalUrl = req.originalUrl || req.url
-    let done = out || handler(req, res, { env, onerror })
+    const done = out || handler(req, res, { env, onerror })
     function next (err) {
-      const layer = stack[index++]
-      if (!layer) {
-        delete req.match
-        setImmediate(done, err)
-        return
+      const { route, handle } = stack[index++] || {}
+      if (!route) {
+        return done(err)
       }
-      if (req.match = req.url.match(layer.route)) {
-        return call(layer, err, req, res, next)
+      if (req.match = route.exec(req.url)) {
+        return call(handle, err, req, res, next)
       } else {
         return next()
       }
@@ -69,18 +67,18 @@ export default class Metal extends EventEmitter {
 }
 
 // Invoke a route handle.
-function call (layer, err, req, res, next) {
-  const arity = layer.handle.length
+function call (handle, err, req, res, next) {
+  const arity = handle.length
   const hasError = Boolean(err)
   let error = err
 
   try {
     if (hasError && arity === 4) {
       // error-handling middleware
-      return layer.handle(err, req, res, next)
+      return handle(err, req, res, next)
     } else if (!hasError && arity < 4) {
       // request-handling middleware
-      return layer.handle(req, res, next)
+      return handle(req, res, next)
     }
   } catch (e) {
     // replace the error
@@ -88,8 +86,6 @@ function call (layer, err, req, res, next) {
   }
   return next(error)
 }
-
-const env = process.env.NODE_ENV || 'development'
 
 // Log error using console.error.
 function onerror (err) {
