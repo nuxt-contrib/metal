@@ -1,5 +1,5 @@
 
-import statuses from './statuses'
+import { STATUS_CODES as statuses } from 'http'
 
 export function escapeRegExp(str) {
   return str.replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1')
