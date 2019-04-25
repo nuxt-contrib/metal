@@ -1,7 +1,7 @@
 
 import http from 'http'
 import { EventEmitter } from 'events'
-import { getURLPathname, trimURLPath, escapeRegExp } from './utils'
+import { trimURLPath, escapeRegExp } from './utils'
 import handler from './handler'
 
 export default class Metal extends EventEmitter {
