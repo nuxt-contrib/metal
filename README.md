@@ -30,7 +30,7 @@ See http://hire.jonasgalvez.com.br/2019/apr/26/revamping-nuxts-http-server
 
 ## Benchmark
 
-- @nuxt/metal: **844k* requests in 40.1s, 103 MB read
+- @nuxt/metal: **844k** requests in 40.1s, 103 MB read
 - connect: **814k** requests in 40.1s, 99.3 MB read
 
 ```sh
