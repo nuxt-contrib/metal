@@ -1,4 +1,6 @@
-# nuxt-metal
+<p align="center"><img align="center" style="width:320px" src="https://user-images.githubusercontent.com/904724/56819729-a795ed00-684a-11e9-87ed-6b9c6613d98b.png"/></p><br/>
+
+# @nuxt/metal
 
 Nuxt currently depends on [connect][cn], a lightweight middleware framework for 
 Node. [connect][cn] currently has 10 dependencies, some of which haven't had 
@@ -21,7 +23,7 @@ still try to specifically address Node 0.8 shortcomings.
   - utils-merge@1.0.1
 ```
 
-**nuxt-metal** is an attempt to provide a fully backwards-compatible rewrite
+**@nuxt/metal** is an attempt to provide a fully backwards-compatible rewrite
 of connect in modern JavaScript, with added support for async middleware and a 
 restructured codebase with many simplifications, cleanups and idiomatic rewrites.
 All without compromising performance, if not improving it slightly.
