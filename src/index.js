@@ -57,6 +57,7 @@ export default class Metal extends EventEmitter {
       if (!route) {
         return done(err)
       }
+      // eslint-disable-next-line no-cond-assign
       if (req.match = route.exec(req.url)) {
         return call(handle, err, req, res, next)
       } else {
