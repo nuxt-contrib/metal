@@ -1,4 +1,4 @@
-<p align="center"><img align="center" style="width:320px" src="https://user-images.githubusercontent.com/904724/56819729-a795ed00-684a-11e9-87ed-6b9c6613d98b.png"/></p><br/>
+<p align="center"><img align="center" style="width:320px" src="https://user-images.githubusercontent.com/904724/56819964-16734600-684b-11e9-877d-60214e883d9d.png"/></p><br/>
 
 # @nuxt/metal
 
