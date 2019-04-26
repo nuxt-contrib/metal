@@ -26,25 +26,16 @@ of connect in modern JavaScript, with added support for async middleware and a
 restructured codebase with many simplifications, cleanups and idiomatic rewrites.
 All without compromising performance, if not improving it slightly.
 
+See http://hire.jonasgalvez.com.br/2019/apr/26/revamping-nuxts-http-server
+
 ## Benchmark
 
-- **718k** requests in 40.14s connect-js
-- **807k** requests in 40.09s nuxt/metal
+- @nuxt/metal: **844k* requests in 40.1s, 103 MB read
+- connect: **814k** requests in 40.1s, 99.3 MB read
 
 ```sh
 autocannon -c 100 -d 40 -p 10 localhost:3000
 ```
-
-## Changes
-
-```js
-  test('should match full path', (done) => {
-    app.use('/blog', (req, res) => res.end(req.url))
-    request(app)
-      .get('/blog')
-      .expect(200, '/blog', done)
-  })
-````
 
 ## Acknowledgement
 
