@@ -6,7 +6,7 @@ import { escapeRegExp } from '../src/utils'
 import rawrequest from './support/rawagent'
 import request from 'supertest'
 
-function re(str) {
+function re (str) {
   return new RegExp(escapeRegExp(str), 'i')
 }
 

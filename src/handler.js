@@ -1,8 +1,6 @@
 
 import { STATUS_CODES as statuses } from 'http'
-import { isFinished } from './utils'
-
-import {
+import { isFinished,
   encodeURL,
   getResponseStatusCode,
   getErrorHeaders,
@@ -70,7 +68,7 @@ function send (req, res, status, headers, message) {
   }
   req.unpipe()
   new Promise((resolve) => {
-    function onFinished() {
+    function onFinished () {
       req.removeListener('end', onFinished)
       res.removeListener('finish', onFinished)
       res.removeListener('close', onFinished)
@@ -83,4 +81,3 @@ function send (req, res, status, headers, message) {
   })
   req.resume()
 }
-
