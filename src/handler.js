@@ -46,8 +46,8 @@ export default function (req, res, options) {
   }
 }
 
-function send (req, res, status, headers, message) {
-  function write () {
+function send(req, res, status, headers, message) {
+  function write() {
     const body = JSON.stringify({ error: message })
     res.statusCode = status
     res.statusMessage = statuses[status]
@@ -68,7 +68,7 @@ function send (req, res, status, headers, message) {
   }
   req.unpipe()
   new Promise((resolve) => {
-    function onFinished () {
+    function onFinished() {
       req.removeListener('end', onFinished)
       res.removeListener('finish', onFinished)
       res.removeListener('close', onFinished)

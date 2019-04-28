@@ -1,7 +1,7 @@
 
 import { STATUS_CODES as statuses } from 'http'
 
-export function escapeRegExp (str) {
+export function escapeRegExp(str) {
   return str.replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1')
 }
 
@@ -28,14 +28,14 @@ const UNMATCHED_SURROGATE_PAIR_REPLACE = '$1\uFFFD$2'
 // try as hard as it can to properly encode the given URL, including replacing
 // any raw, unpaired surrogate pairs with the Unicode replacement character
 // prior to encoding.
-export function encodeURL (url) {
+export function encodeURL(url) {
   return String(url)
     .replace(UNMATCHED_SURROGATE_PAIR_REGEXP, UNMATCHED_SURROGATE_PAIR_REPLACE)
     .replace(ENCODE_CHARS_REGEXP, encodeURI)
 }
 
 // Determine if message is already finished
-export function isFinished (msg) {
+export function isFinished(msg) {
   const socket = msg.socket
   if (typeof msg.finished === 'boolean') { // OutgoingMessage
     return Boolean(msg.finished || (socket && !socket.writable))
@@ -47,7 +47,7 @@ export function isFinished (msg) {
 }
 
 // Get status code from response.
-export function getResponseStatusCode (res) {
+export function getResponseStatusCode(res) {
   const status = res.statusCode
   // default status code to 500 if outside valid range
   if (typeof status !== 'number' || status < 400 || status > 599) {
@@ -57,7 +57,7 @@ export function getResponseStatusCode (res) {
 }
 
 // Get headers from Error object
-export function getErrorHeaders (err) {
+export function getErrorHeaders(err) {
   if (!err.headers || typeof err.headers !== 'object') {
     return undefined
   }
@@ -69,7 +69,7 @@ export function getErrorHeaders (err) {
 }
 
 // Set response headers from an object
-export function setHeaders (res, headers) {
+export function setHeaders(res, headers) {
   if (!headers) {
     return
   }
@@ -79,7 +79,7 @@ export function setHeaders (res, headers) {
 }
 
 // Get status code from Error object.
-export function getErrorStatusCode (err) {
+export function getErrorStatusCode(err) {
   if (typeof err.status === 'number' && err.status >= 400 && err.status < 600) {
     return err.status
   }
@@ -90,7 +90,7 @@ export function getErrorStatusCode (err) {
 }
 
 // Get message from Error object, fallback to status message.
-export function getErrorMessage (err, status, env) {
+export function getErrorMessage(err, status, env) {
   let msg
   if (env !== 'production') {
     msg = err.stack // typically includes err.message

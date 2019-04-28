@@ -1,12 +1,12 @@
 
 import assert from 'assert'
 import http from 'http'
+import request from 'supertest'
 import Metal from '../src/index'
 import { escapeRegExp } from '../src/utils'
 import rawrequest from './support/rawagent'
-import request from 'supertest'
 
-function re (str) {
+function re(str) {
   return new RegExp(escapeRegExp(str), 'i')
 }
 
@@ -52,7 +52,7 @@ describe('app', () => {
     app.use((req, res) => {
       res.end('hello, world!')
     })
-    async function handler (req, res) {
+    async function handler(req, res) {
       res.write('oh, ')
       await app(req, res)
     }
@@ -66,7 +66,7 @@ describe('app', () => {
     app.use('/foo', (req, res) => {
       res.end('hello, world!')
     })
-    function handler (req, res) {
+    function handler(req, res) {
       res.write('oh, ')
       app(req, res, () => res.end('no!'))
     }
@@ -80,7 +80,7 @@ describe('app', () => {
     app.use((req, res) => {
       throw new Error('boom!')
     })
-    function handler (req, res) {
+    function handler(req, res) {
       res.write('oh, ')
       app(req, res, function (err) {
         res.end(err.message)
@@ -99,7 +99,7 @@ describe('app', () => {
     }]
     // execute callbacks in sequence
     let n = 0
-    function run (req, res) {
+    function run(req, res) {
       if (handlers[n]) {
         handlers[n++](req, res, () => {
           run(req, res)
@@ -163,7 +163,7 @@ describe('app', () => {
     it('should use custom error code', (done) => {
       const app = Metal.createServer()
       app.use((req, res, next) => {
-        var err = new Error('ack!')
+        const err = new Error('ack!')
         err.status = 503
         throw err
       })
@@ -211,7 +211,7 @@ describe('app', () => {
   })
 })
 
-function shouldHaveNoBody () {
+function shouldHaveNoBody() {
   return function (res) {
     assert.ok(res.text === '' || res.text === undefined)
   }

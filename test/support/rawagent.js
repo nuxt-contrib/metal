@@ -1,27 +1,27 @@
 import assert from 'assert'
 import http from 'http'
 
-export default function createRawAgent (app) {
+export default function createRawAgent(app) {
   return new RawAgent(app)
 }
 
 class RawAgent {
-  constructor (app) {
+  constructor(app) {
     this.app = app
     this._open = 0
     this._port = null
     this._server = null
   }
-  get (path) {
+  get(path) {
     return new RawRequest(this, 'GET', path)
   }
-  _close (cb) {
+  _close(cb) {
     if (--this._open) {
       return process.nextTick(cb)
     }
     this._server.close(cb)
   }
-  _start (cb) {
+  _start(cb) {
     this._open++
     if (this._port) {
       return process.nextTick(cb)
@@ -38,12 +38,12 @@ class RawAgent {
 }
 
 class RawRequest {
-  constructor (agent, method, path) {
+  constructor(agent, method, path) {
     this.agent = agent
     this.method = method
     this.path = path
   }
-  expect (status, body, callback) {
+  expect(status, body, callback) {
     const request = this
     this.agent._start(function () {
       const req = http.request({

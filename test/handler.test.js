@@ -201,7 +201,7 @@ describe('handler(req, res)', () => {
     })
 
     test('should reset existing res.statusMessage', (done) => {
-      function onRequest (req, res, next) {
+      function onRequest(req, res, next) {
         res.statusMessage = 'An Error Occurred'
         next(new Error())
       }
@@ -465,9 +465,9 @@ describe('handler(req, res)', () => {
 
   describe('onerror', () => {
     test('should be invoked when error', (done) => {
-      let err = new Error('boom!')
+      const err = new Error('boom!')
       let error
-      function log (e) {
+      function log(e) {
         error = e
       }
       request(createServer(err, { onerror: log }))

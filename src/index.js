@@ -7,9 +7,9 @@ const env = process.env.NODE_ENV || 'development'
 const metalStack = Symbol('metal:stack')
 
 export default class Metal extends EventEmitter {
-  static createServer () {
+  static createServer() {
     const app = new Metal()
-    function appHandler (req, res, next) {
+    function appHandler(req, res, next) {
       return appHandler.handle(req, res, next)
     }
     appHandler.route = '/'
@@ -22,11 +22,11 @@ export default class Metal extends EventEmitter {
     }
     return appHandler
   }
-  listen () {
+  listen() {
     const server = http.createServer(this)
     return server.listen.apply(server, arguments)
   }
-  use (route, handle) {
+  use(route, handle) {
     // default route to '/'
     if (typeof route !== 'string' || route instanceof RegExp) {
       handle = route
@@ -47,12 +47,12 @@ export default class Metal extends EventEmitter {
     this[metalStack].push({ route, handle })
     return this
   }
-  async handle (req, res, out) {
+  async handle(req, res, out) {
     let index = 0
     const stack = this[metalStack]
     req.originalUrl = req.originalUrl || req.url
     const done = out || handler(req, res, { env, onerror })
-    function next (err) {
+    function next(err) {
       const { route, handle } = stack[index++] || {}
       if (!route) {
         return done(err)
@@ -69,7 +69,7 @@ export default class Metal extends EventEmitter {
 }
 
 // Invoke a route handle.
-function call (handle, err, req, res, next) {
+function call(handle, err, req, res, next) {
   const arity = handle.length
   const hasError = Boolean(err)
   let error = err
@@ -90,7 +90,7 @@ function call (handle, err, req, res, next) {
 }
 
 // Log error using console.error.
-function onerror (err) {
+function onerror(err) {
   if (env !== 'test') {
     console.error(err.stack || err.toString())
   }
