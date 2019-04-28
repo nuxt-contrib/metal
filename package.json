@@ -10,8 +10,10 @@
     "docs:build": "source deploy.sh",
     "prepublish": "yarn build"
   },
+  "main": "dist/metal.js",
   "files": [
-    "dist"
+    "dist",
+    "nuxt"
   ],
   "devDependencies": {
     "@nuxtjs/eslint-config": "^0.0.1",
