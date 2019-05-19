@@ -13,11 +13,9 @@ export default class Metal extends EventEmitter {
       return app.handle(req, res, next)
     }
   }
-  constructor(...middleware) {
+  constructor(handler, ...middleware) {
     super()
-    if (!middleware.length) {
-      middleware = [baseHandler]
-    }
+    this.handle = handler || baseHandler
     this.route = '/'
     this[metalStack] = []
     for (const mddlwr in middleware) {

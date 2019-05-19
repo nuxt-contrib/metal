@@ -1,6 +1,6 @@
 import { metalStack } from '../symbols'
 import { env } from '../utils'
-import response from '../response'
+import { call, response } from '../response'
 
 export default async function baseHandler(req, res, out) {
   let index = 0
