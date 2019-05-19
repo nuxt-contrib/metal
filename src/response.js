@@ -9,8 +9,36 @@ import { isFinished,
   setHeaders
 } from './utils'
 
+// Invoke a route handle
+export function call(handle, err, req, res, next) {
+  const arity = handle.length
+  const hasError = Boolean(err)
+  let error = err
+
+  try {
+    if (hasError && arity === 4) {
+      // error-handling middleware
+      return handle(err, req, res, next)
+    } else if (!hasError && arity < 4) {
+      // request-handling middleware
+      return handle(req, res, next)
+    }
+  } catch (e) {
+    // replace the error
+    error = e
+  }
+  return next(error)
+}
+
+// Log error using console.error.
+export function onerror(err) {
+  if (env !== 'test') {
+    console.error(err.stack || err.toString())
+  }
+}
+
 // Create a function to handle the final response.
-export default function (req, res, options) {
+export function response (req, res, options) {
   const opts = options || {}
   const env = opts.env || process.env.NODE_ENV || 'development'
   // get error callback
@@ -78,6 +106,5 @@ function send(req, res, status, headers, message) {
     req.on('end', onFinished)
     res.on('finish', onFinished)
     res.on('close', onFinished)
-  })
-  req.resume()
+  }).then(() => req.resume())
 }

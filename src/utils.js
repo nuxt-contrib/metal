@@ -1,6 +1,60 @@
 
 import { STATUS_CODES as statuses } from 'http'
 
+export const env = process.env.NODE_ENV || 'development'
+
+// Parse the `str` url with fast-path short-cut.
+export function getURLPathname(url) {
+  if (!url || url in getURLPathname.cache) {
+    return getURLPathname.cache[url] || url
+  }
+  let offset = 0
+  let slashes = 0
+  let i = 0
+  for (; i < url.length; i++) {
+    switch (url.charCodeAt(i)) {
+      case 47: /* / */
+        if (++slashes > 2) {
+          offset = i
+        }
+        break
+      case 0x3f: /* ? */
+        return url.substring(offset, i)
+      case 0x23: /* # */
+        return url.substring(offset, i)
+    }
+  }
+  // eslint-disable-next-line no-cond-assign
+  return getURLPathname.cache[url] = url.substring(offset, i)
+}
+
+trimURLPath.cache = {}
+
+// Parse a URL up to the end of the domain name
+export function trimURLPath(url) {
+  if (!url || url in trimURLPath.cache) {
+    return trimURLPath.cache[url] || url
+  }
+  let i = 0
+  let s = 0
+  for (; i < url.length; i++) {
+    switch (url.charCodeAt(i)) {
+      case 47:
+        s++
+        if (i === 0) {
+          return
+        }
+        if (s > 2) {
+          return url.substring(0, i)
+        }
+        break
+    }
+  }
+  if (s > 2) {
+    return url
+  }
+}
+
 export function escapeRegExp(str) {
   return str.replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1')
 }
