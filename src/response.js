@@ -1,5 +1,5 @@
-import consola from 'consola'
 import { STATUS_CODES as statuses } from 'http'
+import consola from 'consola'
 import {
   env,
   isFinished,
@@ -40,7 +40,7 @@ export function onerror(err) {
 }
 
 // Create a function to handle the final response.
-export function response (req, res, options) {
+export function response(req, res, options) {
   const opts = options || {}
   const env = opts.env || process.env.NODE_ENV || 'development'
   // get error callback

@@ -1,5 +1,5 @@
-import { call, response } from '../response'
-import { env, onerror, trimURLPath } from '../utils'
+import { call, response, onerror } from '../response'
+import { env, trimURLPath, getURLPathname } from '../utils'
 import { metalStack } from './symbols'
 
 export default function pathHandler(req, res, out) {
@@ -10,7 +10,7 @@ export default function pathHandler(req, res, out) {
   const stack = this[metalStack]
 
   // final function handler
-  const done = out || response(req, res, { en, onerror })
+  const done = out || response(req, res, { env, onerror })
 
   // store the original URL
   req.originalUrl = req.originalUrl || req.url
@@ -36,7 +36,7 @@ export default function pathHandler(req, res, out) {
     }
 
     // route data
-    const path = parseUrl(req).pathname || '/'
+    const path = getURLPathname(req.url) || '/'
     const route = layer.route
 
     // skip this layer if the route doesn't match

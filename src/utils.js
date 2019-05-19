@@ -5,9 +5,6 @@ export const env = process.env.NODE_ENV || 'development'
 
 // Parse the `str` url with fast-path short-cut.
 export function getURLPathname(url) {
-  if (!url || url in getURLPathname.cache) {
-    return getURLPathname.cache[url] || url
-  }
   let offset = 0
   let slashes = 0
   let i = 0
@@ -24,17 +21,14 @@ export function getURLPathname(url) {
         return url.substring(offset, i)
     }
   }
-  // eslint-disable-next-line no-cond-assign
-  return getURLPathname.cache[url] = url.substring(offset, i)
+  // eslint-disable-next-line no-return-assign
+  return url.substring(offset, i)
 }
 
 trimURLPath.cache = {}
 
 // Parse a URL up to the end of the domain name
 export function trimURLPath(url) {
-  if (!url || url in trimURLPath.cache) {
-    return trimURLPath.cache[url] || url
-  }
   let i = 0
   let s = 0
   for (; i < url.length; i++) {
@@ -56,7 +50,7 @@ export function trimURLPath(url) {
 }
 
 export function escapeRegExp(str) {
-  return str.replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1')
+  return str.replace(/([.*+?=^!:${}()|[\]/\\])/g, '\\$1')
 }
 
 // RegExp to match non-URL code points, *after* encoding (i.e. not including
