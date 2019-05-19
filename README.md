@@ -30,29 +30,6 @@ All without compromising performance, if not improving it slightly.
 
 See http://hire.jonasgalvez.com.br/2019/apr/26/revamping-nuxts-http-server
 
-## Proposed usage
-
-```js
-import Metal from '@nuxt/metal'
-import { staticHandler, regexHandler } from '@nuxt/metal/handlers'
-
-const app = new Metal(staticHandler, regexHandler)
-```
-
-```js
-import Metal from '@nuxt/metal'
-import { staticHandler, pathHandler } from '@nuxt/metal/handlers'
-
-// Current Nuxt behaviour
-const app = new Metal(staticHandler, pathHandler)
-```
-
-
-```js
-// Mimics current Nuxt behaviour
-const app = new Metal()
-```
-
 ## Benchmark
 
 - @nuxt/metal: **844k** requests in 40.1s, 103 MB read
