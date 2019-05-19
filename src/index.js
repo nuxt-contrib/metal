@@ -4,8 +4,6 @@ import { escapeRegExp } from './utils'
 import { metalStack } from './symbols'
 import baseHandler from './handlers/base'
 
-const env = process.env.NODE_ENV || 'development'
-
 export default class Metal extends EventEmitter {
   static createServer(...args) {
     const app = new Metal(...args)

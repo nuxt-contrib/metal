@@ -47,7 +47,7 @@ describe('app', () => {
       .expect(200, 'hello, world!', done)
   })
 
-  test('should be a callable function', async (done) => {
+  test('should be a callable function', (done) => {
     const app = Metal.createServer()
     app.use((req, res) => {
       res.end('hello, world!')

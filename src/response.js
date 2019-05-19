@@ -1,6 +1,8 @@
-
+import consola from 'consola'
 import { STATUS_CODES as statuses } from 'http'
-import { isFinished,
+import {
+  env,
+  isFinished,
   encodeURL,
   getResponseStatusCode,
   getErrorHeaders,
@@ -33,7 +35,7 @@ export function call(handle, err, req, res, next) {
 // Log error using console.error.
 export function onerror(err) {
   if (env !== 'test') {
-    console.error(err.stack || err.toString())
+    consola.error(err.stack || err.toString())
   }
 }
 
