@@ -45,6 +45,7 @@
     "vuepress": "^0.14.8"
   },
   "dependencies": {
-    "js-yaml": "^3.13.1"
+    "js-yaml": "^3.13.1",
+    "mem": "^4.0.0"
   }
 }
