@@ -1,6 +1,6 @@
 
 var assert = require('assert');
-var connect = require('..');
+var connect = requireESM('../src');
 var http = require('http');
 var request = require('supertest');
 

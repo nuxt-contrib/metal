@@ -1,6 +1,7 @@
 
+var requireESM = require('esm')(module);
 var assert = require('assert')
-var connect = require('..');
+var connect = requireESM('../src');
 var request = require('supertest');
 
 describe('app.listen()', function(){
