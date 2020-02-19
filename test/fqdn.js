@@ -1,7 +1,7 @@
 
 var requireESM = require('esm')(module);
 var assert = require('assert');
-var connect = requireESM('../src');
+var connect =  requireESM('../src').default.createServer;
 var http = require('http');
 var rawrequest = require('./support/rawagent')
 
