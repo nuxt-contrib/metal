@@ -53,18 +53,43 @@ export default class Metal extends EventEmitter {
     req.originalUrl = req.originalUrl || req.url
     const done = out || handler(req, res, { env, onerror })
     function next(err) {
+      let url = req.url
       const { route, handle } = stack[index++] || {}
       if (!route) {
         return done(err)
       }
       // eslint-disable-next-line no-cond-assign
-      if (req.match = route.exec(req.url)) {
+      if (req.match = route.exec(url)) {
+        const match = req.match[0]
+        if (match.length > 1 && match.match(/^(?:http:\/)?\//)) {
+          url = url.replace(match, '')
+          if (url.startsWith('?')) {
+            url = '/' + url
+          }
+          if (req.url.startsWith('//')) {
+            url = 'http:' + url
+          }
+          req.url = url
+        }
         return call(handle, err, req, res, next)
       } else {
         return next()
       }
     }
     await next()
+  }
+}
+
+// Copied straight from connect, used to pass fqdn tests
+function getProtohost(url) {
+  if (url.length === 0 || url[0] === '/') {
+    return
+  }
+
+  var fqdnIndex = url.indexOf('://')
+
+  if (fqdnIndex !== -1 && url.lastIndexOf('?', fqdnIndex) === -1) {
+    return url.substr(0, url.indexOf('/', 3 + fqdnIndex))
   }
 }
 
