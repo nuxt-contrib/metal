@@ -80,19 +80,6 @@ export default class Metal extends EventEmitter {
   }
 }
 
-// Copied straight from connect, used to pass fqdn tests
-function getProtohost(url) {
-  if (url.length === 0 || url[0] === '/') {
-    return
-  }
-
-  var fqdnIndex = url.indexOf('://')
-
-  if (fqdnIndex !== -1 && url.lastIndexOf('?', fqdnIndex) === -1) {
-    return url.substr(0, url.indexOf('/', 3 + fqdnIndex))
-  }
-}
-
 // Invoke a route handle.
 function call(handle, err, req, res, next) {
   const arity = handle.length
